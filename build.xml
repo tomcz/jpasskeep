@@ -3,6 +3,10 @@
 
     <property name="application.name" value="JPasskeep" />
 
+    <tstamp>
+        <format property="today" pattern="yyyyMMdd" />
+    </tstamp>
+
     <property name="src.dir" location="src" />
 
     <property name="output.dir" location="build" />
@@ -20,7 +24,7 @@
         <fileset refid="runtime-jars" />
     </path>
 
-    <target name="build" depends="clean,compile,create-jar,create-zip,create-app,zip-src" />
+    <target name="build" depends="clean,compile,create-jar,create-zip,create-app" />
 
     <target name="clean">
         <delete dir="${output.dir}" />
@@ -56,7 +60,7 @@
             <fileset dir="${basedir}" includes="LICENSE.txt" />
         </one-jar>
         <mkdir dir="${zip.dir}" />
-        <zip destfile="${zip.dir}/${ant.project.name}.zip">
+        <zip destfile="${zip.dir}/${application.name}-${today}.zip">
             <zipfileset prefix="${application.name}" dir="${jar.dir}" includes="main.jar" />
             <zipfileset prefix="${application.name}" dir="${basedir}">
                 <include name="LICENSE.txt" />
@@ -91,19 +95,8 @@
             <arg value="create" />
             <arg value="-srcfolder" />
             <arg value="${app.dir}" />
-            <arg value="${dmg.dir}/${application.name}.dmg" />
+            <arg value="${dmg.dir}/${application.name}-${today}.dmg" />
         </exec>
-    </target>
-
-    <target name="zip-src">
-        <mkdir dir="${zip.dir}" />
-        <zip destfile="${zip.dir}/${ant.project.name}-src.zip">
-            <zipfileset prefix="src" dir="${src.dir}" />
-            <fileset dir="${basedir}">
-                <include name="LICENSE.txt" />
-                <include name="README" />
-            </fileset>
-        </zip>
     </target>
 
     <target name="compress-js">
