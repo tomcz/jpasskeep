@@ -61,7 +61,7 @@
         </one-jar>
         <mkdir dir="${zip.dir}" />
         <zip destfile="${zip.dir}/${application.name}-${today}.zip">
-            <zipfileset prefix="${application.name}" dir="${jar.dir}" includes="main.jar" />
+            <zipfileset prefix="${application.name}" dir="${jar.dir}" excludes="main.jar" />
             <zipfileset prefix="${application.name}" dir="${basedir}">
                 <include name="LICENSE.txt" />
                 <include name="README" />
