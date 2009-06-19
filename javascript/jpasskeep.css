@@ -1,0 +1,49 @@
+body {
+    font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+    line-height: 1.3em;
+    font-size: 16pt;
+    background-color: silver;
+    margin-top: 15em;
+    margin-bottom: 15em;
+}
+
+input {
+    font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+    font-size: 12pt;
+}
+
+form {
+    margin: 0;
+    padding: 10px;
+}
+
+#cipherBlock {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    background-color: white;
+}
+
+#entries {
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.entry {
+    margin-top: 1em;
+    padding: 10px;
+    background-color: white;
+}
+
+.label {
+    font-weight: bold;
+    display: block;
+    float: left;
+    width: 7em;
+}
+
+.field {
+    font-family: "Courier New", Courier, monospace;
+}

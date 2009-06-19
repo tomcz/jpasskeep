@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<project name="jpasskeep" default="build" basedir=".">
+
+    <property name="application.name" value="JPasskeep" />
+
+    <property name="src.dir" location="src" />
+
+    <property name="output.dir" location="build" />
+    <property name="classes.dir" location="${output.dir}/classes" />
+    <property name="app.dir" value="${output.dir}/${application.name}" />
+    <property name="jar.dir" location="${output.dir}/jar" />
+    <property name="zip.dir" location="${output.dir}/zip" />
+    <property name="dmg.dir" location="${output.dir}/dmg" />
+
+    <property name="main.class" value="com.tomczarniecki.jpasskeep.Main" />
+
+    <fileset id="runtime-jars" dir="lib/runtime" includes="*.jar" />
+
+    <path id="compile-classpath">
+        <fileset refid="runtime-jars" />
+    </path>
+
+    <target name="build" depends="clean,compile,create-jar,create-zip,create-app,zip-src" />
+
+    <target name="clean">
+        <delete dir="${output.dir}" />
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${classes.dir}" />
+        <javac destdir="${classes.dir}" srcdir="${src.dir}" classpathref="compile-classpath" debug="yes" />
+        <copy todir="${classes.dir}">
+            <fileset dir="${src.dir}" excludes="**/*.java" />
+        </copy>
+    </target>
+
+    <target name="create-jar">
+        <mkdir dir="${jar.dir}" />
+        <jar destfile="${jar.dir}/main.jar" basedir="${classes.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="${main.class}" />
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="create-zip">
+        <taskdef name="one-jar" classname="com.simontuffs.onejar.ant.OneJarTask">
+            <classpath location="lib/ant/one-jar-ant-task-0.96.jar" />
+        </taskdef>
+        <one-jar destfile="${jar.dir}/${application.name}.jar">
+            <main jar="${jar.dir}/main.jar" />
+            <lib>
+                <fileset refid="runtime-jars" />
+            </lib>
+            <fileset dir="lib/ant" includes="*.txt" />
+            <fileset dir="${basedir}" includes="LICENSE.txt" />
+        </one-jar>
+        <mkdir dir="${zip.dir}" />
+        <zip destfile="${zip.dir}/${ant.project.name}.zip">
+            <zipfileset prefix="${application.name}" dir="${jar.dir}" includes="main.jar" />
+            <zipfileset prefix="${application.name}" dir="${basedir}">
+                <include name="LICENSE.txt" />
+                <include name="README" />
+            </zipfileset>
+        </zip>
+    </target>
+
+    <target name="check-for-mac">
+        <condition property="mac.os.available">
+            <os family="mac" />
+        </condition>
+    </target>
+
+    <target name="create-app" depends="check-for-mac" if="mac.os.available">
+        <taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler">
+            <classpath location="lib/ant/jarbundler-1.8.1.jar" />
+        </taskdef>
+        <mkdir dir="${app.dir}" />
+        <jarbundler dir="${app.dir}"
+                    name="${application.name}"
+                    mainclass="${main.class}"
+                    icon="${basedir}/etc/gir.icns"
+                    jvmversion="1.4+">
+            <jarfileset refid="runtime-jars" />
+            <jarfileset dir="${jar.dir}" includes="main.jar" />
+        </jarbundler>
+        <copy file="${basedir}/LICENSE.txt" todir="${app.dir}" />
+        <copy file="${basedir}/README" todir="${app.dir}" />
+        <mkdir dir="${dmg.dir}" />
+        <exec executable="hdiutil">
+            <arg value="create" />
+            <arg value="-srcfolder" />
+            <arg value="${app.dir}" />
+            <arg value="${dmg.dir}/${application.name}.dmg" />
+        </exec>
+    </target>
+
+    <target name="zip-src">
+        <mkdir dir="${zip.dir}" />
+        <zip destfile="${zip.dir}/${ant.project.name}-src.zip">
+            <zipfileset prefix="src" dir="${src.dir}" />
+            <fileset dir="${basedir}">
+                <include name="LICENSE.txt" />
+                <include name="README" />
+            </fileset>
+        </zip>
+    </target>
+
+    <target name="compress-js">
+        <java jar="lib/ant/yuicompressor-2.4.2.jar" fork="yes" failonerror="yes">
+            <arg value="-o" />
+            <arg value="src/com/tomczarniecki/jpasskeep/resources/jpasskeep-min.js" />
+            <arg value="javascript/jpasskeep.js" />
+        </java>
+    </target>
+
+    <target name="compress-css">
+        <java jar="lib/ant/yuicompressor-2.4.2.jar" fork="yes" failonerror="yes">
+            <arg value="-o" />
+            <arg value="src/com/tomczarniecki/jpasskeep/resources/jpasskeep-min.css" />
+            <arg value="javascript/jpasskeep.css" />
+        </java>
+    </target>
+
+</project>
