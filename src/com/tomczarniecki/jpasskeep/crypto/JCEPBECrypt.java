@@ -35,11 +35,6 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 import java.security.Provider;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class JCEPBECrypt implements PBECrypt {
 
     private static final Provider CIPHER_PROVIDER = new BouncyCastleProvider();

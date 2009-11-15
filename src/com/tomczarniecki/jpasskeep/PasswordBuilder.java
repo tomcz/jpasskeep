@@ -30,11 +30,6 @@ package com.tomczarniecki.jpasskeep;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class PasswordBuilder {
 
     static final int MINIMUM_LENGTH = 2;

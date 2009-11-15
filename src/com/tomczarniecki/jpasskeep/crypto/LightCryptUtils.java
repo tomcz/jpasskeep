@@ -29,12 +29,12 @@ package com.tomczarniecki.jpasskeep.crypto;
 
 import org.bouncycastle.crypto.BufferedBlockCipher;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 
 public class LightCryptUtils {
 
-    public static byte[] processInput(BufferedBlockCipher cipher, ByteArrayInputStream input) throws Exception {
+    public static byte[] processInput(BufferedBlockCipher cipher, InputStream input) throws Exception {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
 
         byte[] inputBuffer = new byte[1024];

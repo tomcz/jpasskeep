@@ -29,11 +29,6 @@ package com.tomczarniecki.jpasskeep;
 
 import java.awt.Toolkit;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class CopyPasswordAction extends CopyToCliboardAction {
 
     public CopyPasswordAction(MainListController controller, Toolkit toolkit) {

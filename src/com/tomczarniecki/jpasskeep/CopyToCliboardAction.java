@@ -33,11 +33,6 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public abstract class CopyToCliboardAction extends AbstractAction {
 
     private final MainListController controller;

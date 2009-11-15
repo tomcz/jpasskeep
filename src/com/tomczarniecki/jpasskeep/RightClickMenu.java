@@ -33,11 +33,6 @@ import javax.swing.JPopupMenu;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class RightClickMenu extends MouseAdapter {
 
     private final JPopupMenu menu;

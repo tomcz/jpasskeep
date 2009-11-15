@@ -44,11 +44,6 @@ import java.awt.Frame;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class EntryDialog extends JDialog {
 
     private final PasswordBuilderDialog dialog = new PasswordBuilderDialog(this);

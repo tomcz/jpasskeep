@@ -30,11 +30,6 @@ package com.tomczarniecki.jpasskeep;
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class EditEntryAction extends AbstractAction {
 
     private MainListController controller;

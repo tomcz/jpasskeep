@@ -31,11 +31,6 @@ import com.tomczarniecki.jpasskeep.Entry;
 
 import java.util.List;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public interface EntryParser {
 
     public List<Entry> read(byte[] ba) throws ParserException;

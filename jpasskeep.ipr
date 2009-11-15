@@ -406,11 +406,7 @@
   <component name="ProjectDetails">
     <option name="projectName" value="jpasskeep" />
   </component>
-  <component name="ProjectFileVersion" converted="true">
-    <converter id="javaee-modules" />
-    <converter id="ror-modules" />
-    <converter id="SelenaRunConfToDiana" />
-  </component>
+  <component name="ProjectFileVersion" converted="true" />
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/jpasskeep.iml" filepath="$PROJECT_DIR$/jpasskeep.iml" />
@@ -472,9 +468,7 @@
         <root url="file://$PROJECT_DIR$/lib/buildtime" />
       </CLASSES>
       <JAVADOC />
-      <SOURCES>
-        <root url="jar://$PROJECT_DIR$/lib/src/junit-4.5-src.jar!/" />
-      </SOURCES>
+      <SOURCES />
       <jarDirectory url="file://$PROJECT_DIR$/lib/buildtime" recursive="false" />
     </library>
   </component>

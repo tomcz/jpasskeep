@@ -42,11 +42,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class JDOMParser implements EntryParser {
 
     public static final String ROOT = "list";

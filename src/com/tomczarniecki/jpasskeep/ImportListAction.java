@@ -38,11 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class ImportListAction extends AbstractAction {
 
     private JFrame parent;

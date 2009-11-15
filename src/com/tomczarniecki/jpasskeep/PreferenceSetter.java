@@ -34,11 +34,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.prefs.Preferences;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class PreferenceSetter extends WindowAdapter {
 
     static final String PREF_WIDTH = "width";

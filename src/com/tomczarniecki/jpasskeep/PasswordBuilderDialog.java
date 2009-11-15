@@ -46,11 +46,6 @@ import javax.swing.ListSelectionModel;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class PasswordBuilderDialog extends JDialog {
 
     private static final String CHECKBOX_ALIGNMENT = "right,default";

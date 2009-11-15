@@ -27,12 +27,7 @@
  */
 package com.tomczarniecki.jpasskeep.crypto;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
-public class CryptoException extends Exception {
+public class CryptoException extends RuntimeException {
 
     public CryptoException(String message) {
         super(message);

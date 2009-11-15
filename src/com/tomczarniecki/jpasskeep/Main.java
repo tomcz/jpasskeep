@@ -31,7 +31,12 @@ import com.tomczarniecki.jpasskeep.crypto.CryptoException;
 import com.tomczarniecki.jpasskeep.crypto.CryptoUtils;
 
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.NO_OPTION;
+import static javax.swing.JOptionPane.YES_NO_CANCEL_OPTION;
+import static javax.swing.JOptionPane.YES_OPTION;
+import static javax.swing.JOptionPane.showConfirmDialog;
+import static javax.swing.JOptionPane.showMessageDialog;
 import javax.swing.SwingUtilities;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -39,11 +44,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class Main {
 
     private static File passFile;
@@ -97,6 +97,7 @@ public class Main {
             }
         } catch (CryptoException e) {
             handleError("Input Error", "Invalid password", e);
+
         } catch (Exception e) {
             handleError("Unexpected Error", e.toString(), e);
         }
@@ -114,20 +115,18 @@ public class Main {
 
     private static void handleError(String title, String message, Exception error) {
         error.printStackTrace();
-        JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
+        showMessageDialog(null, message, title, ERROR_MESSAGE);
     }
 
     private static class WindowCloseListener extends WindowAdapter {
-
         public void windowClosing(WindowEvent evt) {
             if (controller.isDirty()) {
-                int result = JOptionPane.showConfirmDialog(evt.getComponent(), "Save Changes?", "Closing",
-                        JOptionPane.YES_NO_CANCEL_OPTION);
+                int result = showConfirmDialog(evt.getComponent(), "Save Changes?", "Closing", YES_NO_CANCEL_OPTION);
                 switch (result) {
-                    case JOptionPane.YES_OPTION:
+                    case YES_OPTION:
                         saveEntries();
                         break;
-                    case JOptionPane.NO_OPTION:
+                    case NO_OPTION:
                         // don't save, still close
                         break;
                     default:

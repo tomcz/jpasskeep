@@ -37,11 +37,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.StringTokenizer;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class CryptoUtils {
 
     static final int CIPHER_SALT_SIZE = 20;

@@ -36,11 +36,6 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.List;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class ExportListAction extends AbstractAction {
 
     private JFrame parent;

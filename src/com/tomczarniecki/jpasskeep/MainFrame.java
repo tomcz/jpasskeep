@@ -36,11 +36,6 @@ import javax.swing.JSplitPane;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class MainFrame extends JFrame {
 
     public MainFrame(MainListController controller) {

@@ -32,11 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class SelectTableModel extends AbstractTableModel {
 
     private static final String[] DEFAULT_COLUMNS = {"Select", "Entry", "Category"};

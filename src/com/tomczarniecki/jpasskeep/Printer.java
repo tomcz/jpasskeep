@@ -41,11 +41,6 @@ import java.awt.print.PrinterJob;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class Printer implements Runnable, Printable {
 
     private final List<String> text;

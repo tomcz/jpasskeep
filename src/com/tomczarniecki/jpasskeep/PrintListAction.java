@@ -35,11 +35,6 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class PrintListAction extends AbstractAction {
 
     private final JFrame parent;

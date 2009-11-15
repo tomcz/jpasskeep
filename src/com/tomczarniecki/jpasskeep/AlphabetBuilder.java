@@ -27,11 +27,6 @@
  */
 package com.tomczarniecki.jpasskeep;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class AlphabetBuilder {
 
     static final String SPECIAL_CHARS = "~!@#$%^&*_+-=:;<>,.?";

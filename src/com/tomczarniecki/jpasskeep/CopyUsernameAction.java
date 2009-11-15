@@ -29,11 +29,6 @@ package com.tomczarniecki.jpasskeep;
 
 import java.awt.Toolkit;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class CopyUsernameAction extends CopyToCliboardAction {
 
     public CopyUsernameAction(MainListController controller, Toolkit toolkit) {

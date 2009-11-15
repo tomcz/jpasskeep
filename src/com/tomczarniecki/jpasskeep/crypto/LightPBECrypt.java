@@ -38,11 +38,6 @@ import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 
 import java.io.ByteArrayInputStream;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class LightPBECrypt implements PBECrypt {
 
     public byte[] encrypt(byte[] plainText, char[] passphrase, byte[] salt, int iterations) throws CryptoException {

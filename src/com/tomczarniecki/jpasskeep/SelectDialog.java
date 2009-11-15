@@ -44,11 +44,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class SelectDialog extends JDialog {
 
     private SelectTableModel model;

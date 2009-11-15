@@ -31,11 +31,6 @@ import javax.swing.AbstractListModel;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class MainListModel extends AbstractListModel {
 
     private List<Integer> filtered;

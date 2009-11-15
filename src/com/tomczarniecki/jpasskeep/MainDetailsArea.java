@@ -38,11 +38,6 @@ import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class MainDetailsArea implements ListSelectionListener, ListDataListener {
 
     private boolean showPasswd = true;

@@ -27,12 +27,7 @@
  */
 package com.tomczarniecki.jpasskeep;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
-public class PasswordBuilderException extends Exception {
+public class PasswordBuilderException extends RuntimeException {
 
     public PasswordBuilderException(String message) {
         super(message);

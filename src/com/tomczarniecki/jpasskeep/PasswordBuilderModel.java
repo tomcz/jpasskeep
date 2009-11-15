@@ -30,11 +30,6 @@ package com.tomczarniecki.jpasskeep;
 import javax.swing.AbstractListModel;
 import java.util.Arrays;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class PasswordBuilderModel extends AbstractListModel {
 
     private final String[] passwords;

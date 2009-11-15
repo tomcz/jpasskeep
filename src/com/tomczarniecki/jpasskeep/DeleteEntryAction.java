@@ -29,14 +29,11 @@ package com.tomczarniecki.jpasskeep;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
+import static javax.swing.JOptionPane.YES_NO_OPTION;
+import static javax.swing.JOptionPane.YES_OPTION;
+import static javax.swing.JOptionPane.showConfirmDialog;
 import java.awt.event.ActionEvent;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class DeleteEntryAction extends AbstractAction {
 
     private String title;
@@ -53,9 +50,8 @@ public class DeleteEntryAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         if (controller.isEntrySelected()) {
             String currentName = controller.getSelectedEntry().getDescription();
-            int result = JOptionPane.showConfirmDialog(parent, "Delete \"" + currentName + "\"", title,
-                    JOptionPane.YES_NO_OPTION);
-            if (result == JOptionPane.YES_OPTION) {
+            int result = showConfirmDialog(parent, "Delete \"" + currentName + "\"", title, YES_NO_OPTION);
+            if (result == YES_OPTION) {
                 controller.removeSelectedEntry();
             }
         }

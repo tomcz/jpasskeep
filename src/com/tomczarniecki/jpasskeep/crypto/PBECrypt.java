@@ -27,11 +27,6 @@
  */
 package com.tomczarniecki.jpasskeep.crypto;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public interface PBECrypt {
 
     public byte[] encrypt(byte[] plainText, char[] passphrase, byte[] salt, int iterations) throws CryptoException;

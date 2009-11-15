@@ -36,11 +36,6 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.event.MouseListener;
 import java.util.List;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class MainListController {
 
     private JList display;

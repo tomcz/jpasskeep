@@ -33,11 +33,6 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * ???
- *
- * @author Tom Czarniecki
- */
 public class Entry implements Comparable<Entry> {
 
     private String description = "";

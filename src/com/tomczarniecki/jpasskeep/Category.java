@@ -27,9 +27,6 @@
  */
 package com.tomczarniecki.jpasskeep;
 
-/**
- * @author Tom Czarniecki
- */
 public enum Category {
-    Home, Work, Other;
+    Home, Work, Other
 }
