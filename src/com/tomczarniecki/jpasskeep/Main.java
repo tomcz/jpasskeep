@@ -38,33 +38,33 @@ import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
 import javax.swing.SwingUtilities;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
 
-    private static File passFile;
-    private static char[] password;
-    private static MainListController controller;
+    private JFrame frame;
+    private File passFile;
+    private char[] password;
+    private MainListController controller;
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                Main application = new Main();
+                application.initialise(args);
+                application.createAndShowGUI();
+            }
+        });
+    }
+
+    private void initialise(String[] args) {
         if (args.length == 0) {
             passFile = new File(System.getProperty("user.home"), ".jpasskeep");
         } else {
             passFile = new File(args[0]);
         }
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                initialise();
-                createAndShowGUI();
-            }
-        });
-    }
-
-    private static void initialise() {
         PasswordDialog dialog = new PasswordDialog(null, "Password Keeper");
         if (dialog.showDialog(passFile, true)) {
             passFile = dialog.getFile();
@@ -75,20 +75,22 @@ public class Main {
         }
     }
 
-    private static void createAndShowGUI() {
-        JFrame frame = new MainFrame(controller);
+    private void createAndShowGUI() {
+        frame = new MainFrame(controller);
 
         RightClickMenu menu = new RightClickMenu();
         menu.addAction(new CopyUsernameAction(controller, frame.getToolkit()));
         menu.addAction(new CopyPasswordAction(controller, frame.getToolkit()));
         controller.addMouseListener(menu);
 
+        Runnable windowClose = new OnWindowCloseAction();
+
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        frame.addWindowListener(new WindowCloseListener());
+        frame.addWindowListener(new WindowCloseListener(windowClose));
         frame.setVisible(true);
     }
 
-    private static List<Entry> loadEntries() {
+    private List<Entry> loadEntries() {
         try {
             if (passFile.exists()) {
                 return CryptoUtils.decrypt(passFile, password);
@@ -105,7 +107,7 @@ public class Main {
         return null;
     }
 
-    private static void saveEntries() {
+    private void saveEntries() {
         try {
             CryptoUtils.encrypt(controller.getEntries(), passFile, password);
         } catch (Exception e) {
@@ -113,15 +115,15 @@ public class Main {
         }
     }
 
-    private static void handleError(String title, String message, Exception error) {
+    private void handleError(String title, String message, Exception error) {
         error.printStackTrace();
         showMessageDialog(null, message, title, ERROR_MESSAGE);
     }
 
-    private static class WindowCloseListener extends WindowAdapter {
-        public void windowClosing(WindowEvent evt) {
+    private class OnWindowCloseAction implements Runnable {
+        public void run() {
             if (controller.isDirty()) {
-                int result = showConfirmDialog(evt.getComponent(), "Save Changes?", "Closing", YES_NO_CANCEL_OPTION);
+                int result = showConfirmDialog(frame, "Save Changes?", "Closing", YES_NO_CANCEL_OPTION);
                 switch (result) {
                     case YES_OPTION:
                         saveEntries();
