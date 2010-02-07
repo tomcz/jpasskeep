@@ -27,6 +27,8 @@
  */
 package com.tomczarniecki.jpasskeep;
 
+import org.apache.commons.lang.SystemUtils;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -43,22 +45,24 @@ public class OsxQuitAdaptor implements InvocationHandler {
     }
 
     public static void setQuitHandler(QuitHandler handler) {
-        try {
-            Class applicationClass = Class.forName("com.apple.eawt.Application");
-            Method method = applicationClass.getMethod("getApplication");
-            Object application = method.invoke(null);
+        if (SystemUtils.IS_OS_MAC) {
+            try {
+                Class applicationClass = Class.forName("com.apple.eawt.Application");
+                Method method = applicationClass.getMethod("getApplication");
+                Object application = method.invoke(null);
 
-            Class listenerClass = Class.forName("com.apple.eawt.ApplicationListener");
-            Method addListenerMethod = applicationClass.getDeclaredMethod("addApplicationListener", listenerClass);
+                Class listenerClass = Class.forName("com.apple.eawt.ApplicationListener");
+                Method addListenerMethod = applicationClass.getDeclaredMethod("addApplicationListener", listenerClass);
 
-            Class[] interfaces = {listenerClass};
-            InvocationHandler adaptor = new OsxQuitAdaptor(handler);
-            Object listener = Proxy.newProxyInstance(OsxQuitAdaptor.class.getClassLoader(), interfaces, adaptor);
+                Class[] interfaces = {listenerClass};
+                InvocationHandler adaptor = new OsxQuitAdaptor(handler);
+                Object listener = Proxy.newProxyInstance(OsxQuitAdaptor.class.getClassLoader(), interfaces, adaptor);
 
-            addListenerMethod.invoke(application, listener);
+                addListenerMethod.invoke(application, listener);
 
-        } catch (Exception e) {
-            System.err.println("Apple EAWT event handling is disabled: " + e);
+            } catch (Exception e) {
+                System.err.println("Apple EAWT event handling is disabled: " + e);
+            }
         }
     }
 
