@@ -27,20 +27,6 @@
  */
 package com.tomczarniecki.jpasskeep;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
-public class WindowCloseListener extends WindowAdapter {
-
-    private final QuitHandler handler;
-
-    public WindowCloseListener(QuitHandler handler) {
-        this.handler = handler;
-    }
-
-    public void windowClosing(WindowEvent evt) {
-        if (handler.quit()) {
-            System.exit(0);
-        }
-    }
+public interface QuitHandler {
+    boolean quit();
 }

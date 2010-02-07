@@ -29,6 +29,7 @@ package com.tomczarniecki.jpasskeep;
 
 import com.tomczarniecki.jpasskeep.crypto.CryptoException;
 import com.tomczarniecki.jpasskeep.crypto.CryptoUtils;
+import org.apache.commons.lang.SystemUtils;
 
 import javax.swing.JFrame;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
@@ -61,7 +62,7 @@ public class Main {
 
     private void initialise(String[] args) {
         if (args.length == 0) {
-            passFile = new File(System.getProperty("user.home"), ".jpasskeep");
+            passFile = new File(SystemUtils.USER_HOME, ".jpasskeep");
         } else {
             passFile = new File(args[0]);
         }
@@ -83,10 +84,11 @@ public class Main {
         menu.addAction(new CopyPasswordAction(controller, frame.getToolkit()));
         controller.addMouseListener(menu);
 
-        Runnable windowClose = new OnWindowCloseAction();
+        QuitHandler quit = new SaveEntriesOnQuit();
+        OsxQuitAdaptor.setQuitHandler(quit);
 
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        frame.addWindowListener(new WindowCloseListener(windowClose));
+        frame.addWindowListener(new WindowCloseListener(quit));
         frame.setVisible(true);
     }
 
@@ -117,26 +119,26 @@ public class Main {
 
     private void handleError(String title, String message, Exception error) {
         error.printStackTrace();
-        showMessageDialog(null, message, title, ERROR_MESSAGE);
+        showMessageDialog(frame, message, title, ERROR_MESSAGE);
     }
 
-    private class OnWindowCloseAction implements Runnable {
-        public void run() {
+    private class SaveEntriesOnQuit implements QuitHandler {
+        public boolean quit() {
             if (controller.isDirty()) {
                 int result = showConfirmDialog(frame, "Save Changes?", "Closing", YES_NO_CANCEL_OPTION);
                 switch (result) {
                     case YES_OPTION:
                         saveEntries();
-                        break;
+                        return true;
                     case NO_OPTION:
                         // don't save, still close
-                        break;
+                        return true;
                     default:
                         // don't close
-                        return;
+                        return false;
                 }
             }
-            System.exit(0);
+            return true;
         }
     }
 }
