@@ -1,22 +1,23 @@
 <?xml version="1.0"?>
-<project name="jpasskeep" default="build" basedir=".">
-
-    <property name="application.name" value="JPasskeep" />
+<project name="JPasskeep" default="build" basedir=".">
 
     <tstamp>
-        <format property="today" pattern="yyyyMMdd" />
+        <format property="release.version" pattern="yyyyMMdd" />
     </tstamp>
+
+    <property name="application.name" value="${ant.project.name}-${release.version}" />
+    <property name="main.class" value="com.tomczarniecki.jpasskeep.Main" />
 
     <property name="src.dir" location="src" />
 
     <property name="output.dir" location="build" />
     <property name="classes.dir" location="${output.dir}/classes" />
-    <property name="app.dir" value="${output.dir}/${application.name}" />
+
     <property name="jar.dir" location="${output.dir}/jar" />
     <property name="zip.dir" location="${output.dir}/zip" />
-    <property name="dmg.dir" location="${output.dir}/dmg" />
 
-    <property name="main.class" value="com.tomczarniecki.jpasskeep.Main" />
+    <property name="app.dir" location="${output.dir}/${ant.project.name}" />
+    <property name="dmg.dir" location="${output.dir}/dmg" />
 
     <fileset id="runtime-jars" dir="lib/runtime" includes="*.jar" />
 
@@ -51,7 +52,7 @@
         <taskdef name="one-jar" classname="com.simontuffs.onejar.ant.OneJarTask">
             <classpath location="lib/ant/one-jar-ant-task-0.96.jar" />
         </taskdef>
-        <one-jar destfile="${jar.dir}/${application.name}.jar">
+        <one-jar destfile="${jar.dir}/${ant.project.name}.jar">
             <main jar="${jar.dir}/main.jar" />
             <lib>
                 <fileset refid="runtime-jars" />
@@ -60,8 +61,10 @@
             <fileset dir="${basedir}" includes="LICENSE.txt" />
         </one-jar>
         <mkdir dir="${zip.dir}" />
-        <zip destfile="${zip.dir}/${application.name}-${today}.zip">
-            <zipfileset prefix="${application.name}" dir="${jar.dir}" excludes="main.jar" />
+        <zip destfile="${zip.dir}/${application.name}.zip">
+            <zipfileset prefix="${application.name}" dir="${jar.dir}">
+                <include name="${ant.project.name}.jar" />
+            </zipfileset>
             <zipfileset prefix="${application.name}" dir="${basedir}">
                 <include name="LICENSE.txt" />
                 <include name="README" />
@@ -81,7 +84,7 @@
         </taskdef>
         <mkdir dir="${app.dir}" />
         <jarbundler dir="${app.dir}"
-                    name="${application.name}"
+                    name="${ant.project.name}"
                     mainclass="${main.class}"
                     icon="${basedir}/etc/gir.icns"
                     jvmversion="1.4+">
@@ -95,7 +98,7 @@
             <arg value="create" />
             <arg value="-srcfolder" />
             <arg value="${app.dir}" />
-            <arg value="${dmg.dir}/${application.name}-${today}.dmg" />
+            <arg value="${dmg.dir}/${application.name}.dmg" />
         </exec>
     </target>
 
