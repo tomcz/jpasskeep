@@ -38,12 +38,11 @@ import java.beans.EventHandler;
 
 public class MainFrame extends JFrame {
 
-    public MainFrame(MainListController controller) {
+    public MainFrame(MainListController controller, PreferenceSetter prefs) {
         super("Password Keeper");
 
         MainDetailsArea details = new MainDetailsArea(controller);
 
-        PreferenceSetter prefs = new PreferenceSetter(getClass());
         prefs.setDetailsPrefs(details);
         prefs.setFilterPrefs(controller);
 
@@ -53,7 +52,6 @@ public class MainFrame extends JFrame {
 
         prefs.setFramePrefs(this);
         prefs.setDisplayPrefs(display);
-        addWindowListener(prefs);
     }
 
     private JSplitPane createDisplay(MainListController controller, MainDetailsArea details) {

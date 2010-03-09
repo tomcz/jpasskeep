@@ -30,11 +30,9 @@ package com.tomczarniecki.jpasskeep;
 import javax.swing.JFrame;
 import javax.swing.JSplitPane;
 import java.awt.Point;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.prefs.Preferences;
 
-public class PreferenceSetter extends WindowAdapter {
+public class PreferenceSetter implements QuitHandler {
 
     static final String PREF_WIDTH = "width";
     static final String PREF_HEIGHT = "height";
@@ -92,7 +90,7 @@ public class PreferenceSetter extends WindowAdapter {
         controller.setShowOther(prefs.getBoolean(PREF_SHOW_OTHER, true));
     }
 
-    public void windowClosing(WindowEvent e) {
+    public boolean quit() {
         Point frameLocation = frame.getLocation();
         prefs.putInt(PREF_WIDTH, frame.getWidth());
         prefs.putInt(PREF_HEIGHT, frame.getHeight());
@@ -104,5 +102,6 @@ public class PreferenceSetter extends WindowAdapter {
         prefs.putBoolean(PREF_SHOW_HOME, controller.isShowHome());
         prefs.putBoolean(PREF_SHOW_WORK, controller.isShowWork());
         prefs.putBoolean(PREF_SHOW_OTHER, controller.isShowOther());
+        return true;
     }
 }

@@ -32,16 +32,17 @@ import com.tomczarniecki.jpasskeep.crypto.CryptoUtils;
 import org.apache.commons.lang.SystemUtils;
 
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.NO_OPTION;
 import static javax.swing.JOptionPane.YES_NO_CANCEL_OPTION;
 import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
-import javax.swing.SwingUtilities;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Main {
 
@@ -77,14 +78,15 @@ public class Main {
     }
 
     private void createAndShowGUI() {
-        frame = new MainFrame(controller);
+        PreferenceSetter prefs = new PreferenceSetter(MainFrame.class);
+        frame = new MainFrame(controller, prefs);
 
         RightClickMenu menu = new RightClickMenu();
         menu.addAction(new CopyUsernameAction(controller, frame.getToolkit()));
         menu.addAction(new CopyPasswordAction(controller, frame.getToolkit()));
         controller.addMouseListener(menu);
 
-        QuitHandler quit = new SaveEntriesOnQuit();
+        QuitHandler quit = new CompositeQuitHandler(prefs, new SaveEntriesOnQuit());
         OsxQuitAdaptor.setQuitHandler(quit);
 
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
