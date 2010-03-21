@@ -28,29 +28,23 @@
 package com.tomczarniecki.jpasskeep;
 
 import javax.swing.AbstractAction;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 
 public abstract class CopyToCliboardAction extends AbstractAction {
 
     private final MainListController controller;
-    private final Toolkit toolkit;
+    private final Display display;
 
-    public CopyToCliboardAction(String name, MainListController controller, Toolkit toolkit) {
+    public CopyToCliboardAction(String name, MainListController controller, Display display) {
         super(name);
         this.controller = controller;
-        this.toolkit = toolkit;
+        this.display = display;
     }
 
     public void actionPerformed(ActionEvent e) {
         if (controller.isEntrySelected()) {
             Entry entry = controller.getSelectedEntry();
-            String value = getValue(entry);
-            StringSelection selection = new StringSelection(value);
-            Clipboard clipboard = toolkit.getSystemClipboard();
-            clipboard.setContents(selection, selection);
+            display.setClipboardContents(getValue(entry));
         }
     }
 

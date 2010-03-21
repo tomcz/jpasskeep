@@ -28,11 +28,10 @@
 package com.tomczarniecki.jpasskeep;
 
 import com.tomczarniecki.jpasskeep.crypto.CryptoException;
-import com.tomczarniecki.jpasskeep.crypto.CryptoUtils;
+import com.tomczarniecki.jpasskeep.crypto.EntryCipher;
 import org.apache.commons.lang.SystemUtils;
 
 import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,17 +45,25 @@ import static javax.swing.JOptionPane.showMessageDialog;
 
 public class Main {
 
-    private JFrame frame;
     private File passFile;
     private char[] password;
+
+    private MainFrame frame;
     private MainListController controller;
 
-    public static void main(final String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
+    private final Worker worker = new Worker();
+    private final EntryCipher cipher = new EntryCipher();
+
+    public static void main(String[] args) {
+        Main application = new Main();
+        application.start(args);
+    }
+
+    private void start(final String[] args) {
+        worker.runOnEventLoop(new Runnable() {
             public void run() {
-                Main application = new Main();
-                application.initialise(args);
-                application.createAndShowGUI();
+                initialise(args);
+                createAndShowGUI();
             }
         });
     }
@@ -79,11 +86,14 @@ public class Main {
 
     private void createAndShowGUI() {
         PreferenceSetter prefs = new PreferenceSetter(MainFrame.class);
-        frame = new MainFrame(controller, prefs);
+
+        frame = new MainFrame(controller, cipher, worker, prefs);
+        Display display = frame.getDisplay();
 
         RightClickMenu menu = new RightClickMenu();
-        menu.addAction(new CopyUsernameAction(controller, frame.getToolkit()));
-        menu.addAction(new CopyPasswordAction(controller, frame.getToolkit()));
+        menu.addAction(new CopyUsernameAction(controller, display));
+        menu.addAction(new CopyPasswordAction(controller, display));
+
         controller.addMouseListener(menu);
 
         QuitHandler quit = new CompositeQuitHandler(prefs, new SaveEntriesOnQuit());
@@ -97,7 +107,7 @@ public class Main {
     private List<Entry> loadEntries() {
         try {
             if (passFile.exists()) {
-                return CryptoUtils.decrypt(passFile, password);
+                return cipher.decrypt(passFile, password);
             } else {
                 return new ArrayList<Entry>();
             }
@@ -113,7 +123,7 @@ public class Main {
 
     private void saveEntries() {
         try {
-            CryptoUtils.encrypt(controller.getEntries(), passFile, password);
+            cipher.encrypt(controller.getEntries(), passFile, password);
         } catch (Exception e) {
             handleError("Save Error", e.toString(), e);
         }

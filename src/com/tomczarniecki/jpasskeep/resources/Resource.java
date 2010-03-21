@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2009, Thomas Czarniecki
+ * Copyright (c) 2005-2010, Thomas Czarniecki
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -25,15 +25,22 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.tomczarniecki.jpasskeep;
+package com.tomczarniecki.jpasskeep.resources;
 
-public class CopyPasswordAction extends CopyToCliboardAction {
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.Validate;
 
-    public CopyPasswordAction(MainListController controller, Display display) {
-        super("Copy Password", controller, display);
-    }
+import java.io.InputStream;
 
-    protected String getValue(Entry entry) {
-        return entry.getPassword();
+public class Resource {
+
+    public static String loadResource(String name) throws Exception {
+        InputStream input = Resource.class.getResourceAsStream(name);
+        Validate.isTrue(input != null, "Cannot find resource: " + name);
+        try {
+            return IOUtils.toString(input, "UTF-8");
+        } finally {
+            IOUtils.closeQuietly(input);
+        }
     }
 }

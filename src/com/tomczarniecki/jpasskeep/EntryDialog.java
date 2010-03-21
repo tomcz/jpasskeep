@@ -41,22 +41,33 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import java.awt.Frame;
-import java.awt.event.ActionListener;
-import java.beans.EventHandler;
 
-public class EntryDialog extends JDialog {
+public class EntryDialog extends JDialog implements EventListener<EntryDialog.Event> {
 
-    private final PasswordBuilderDialog dialog = new PasswordBuilderDialog(this);
-    private final JTextField description = new JTextField();
-    private final JComboBox category = new JComboBox(Category.values());
-    private final JTextField username = new JTextField();
-    private final JTextField password = new JTextField();
-    private final JTextArea notes = new JTextArea();
+    public static enum Event {
+        GENERATE, SAVE, CANCEL
+    }
+
+    private final PasswordBuilderDialog dialog;
+    private final JTextField description;
+    private final JComboBox category;
+    private final JTextField username;
+    private final JTextField password;
+    private final JTextArea notes;
 
     private boolean success = false;
 
     public EntryDialog(Frame owner, String title) {
         super(owner, title, true);
+
+        dialog = new PasswordBuilderDialog(this);
+
+        description = new JTextField();
+        category = new JComboBox(Category.values());
+        username = new JTextField();
+        password = new JTextField();
+        notes = new JTextArea();
+
         getContentPane().add(createDisplay());
         setResizable(false);
         pack();
@@ -64,23 +75,31 @@ public class EntryDialog extends JDialog {
 
     public Entry display(Entry entry) {
         success = false;
-        setFields(entry);
+
+        setFieldsFromEntry(entry);
         setLocationRelativeTo(getOwner());
         setVisible(true);
+
         // setVisible will block until its false
-        return success ? getFields() : null;
+        return success ? getEntryFromFields() : null;
     }
 
-    public void save() {
-        success = true;
-        setVisible(false);
+    public void processEvent(Event event) {
+        switch (event) {
+            case GENERATE:
+                generate();
+                break;
+            case SAVE:
+                success = true;
+                setVisible(false);
+                break;
+            case CANCEL:
+                setVisible(false);
+                break;
+        }
     }
 
-    public void cancel() {
-        setVisible(false);
-    }
-
-    public void generate() {
+    private void generate() {
         String pwd = dialog.display();
         if (StringUtils.isNotBlank(pwd)) {
             password.setText(pwd);
@@ -89,8 +108,10 @@ public class EntryDialog extends JDialog {
 
     private JPanel createDisplay() {
         CellConstraints cc = new CellConstraints();
+
         String cols = "pref,5dlu,100dlu,5dlu,pref";
         String rows = "pref,5dlu,pref,5dlu,pref,5dlu,pref,10dlu,50dlu,10dlu,pref";
+
         FormLayout layout = new FormLayout(cols, rows);
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
@@ -98,6 +119,7 @@ public class EntryDialog extends JDialog {
         category.setEditable(false);
         notes.setLineWrap(true);
         notes.setWrapStyleWord(true);
+
         JScrollPane scrollPane = new JScrollPane(notes);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
@@ -109,33 +131,24 @@ public class EntryDialog extends JDialog {
         builder.add(username, cc.xyw(3, 5, 3));
         builder.addLabel("Password", cc.xy(1, 7));
         builder.add(password, cc.xy(3, 7));
-        builder.add(createGenerateButton(), cc.xy(5, 7));
+        builder.add(new JButton(EventAction.create("Generate", Event.GENERATE, this)), cc.xy(5, 7));
         builder.add(scrollPane, cc.xyw(1, 9, 5, "fill,fill"));
         builder.add(createButtonPanel(), cc.xyw(1, 11, 5));
-        return builder.getPanel();
-    }
 
-    private JButton createGenerateButton() {
-        JButton button = new JButton("Generate");
-        button.addActionListener(EventHandler.create(ActionListener.class, this, "generate"));
-        return button;
+        return builder.getPanel();
     }
 
     private JPanel createButtonPanel() {
         ButtonBarBuilder buttonBar = ButtonBarBuilder.createLeftToRightBuilder();
         buttonBar.addGlue();
-        JButton saveButton = new JButton("Save");
-        saveButton.addActionListener(EventHandler.create(ActionListener.class, this, "save"));
-        buttonBar.addGridded(saveButton);
+        buttonBar.addGridded(new JButton(EventAction.create("Save", Event.SAVE, this)));
         buttonBar.addRelatedGap();
-        JButton cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(EventHandler.create(ActionListener.class, this, "cancel"));
-        buttonBar.addGridded(cancelButton);
+        buttonBar.addGridded(new JButton(EventAction.create("Cancel", Event.CANCEL, this)));
         buttonBar.addGlue();
         return buttonBar.getPanel();
     }
 
-    private void setFields(Entry entry) {
+    private void setFieldsFromEntry(Entry entry) {
         if (entry != null) {
             description.setText(entry.getDescription());
             category.setSelectedItem(entry.getCategory());
@@ -151,7 +164,7 @@ public class EntryDialog extends JDialog {
         }
     }
 
-    private Entry getFields() {
+    private Entry getEntryFromFields() {
         Entry entry = new Entry();
         entry.setDescription(description.getText());
         entry.setCategory((Category) category.getSelectedItem());

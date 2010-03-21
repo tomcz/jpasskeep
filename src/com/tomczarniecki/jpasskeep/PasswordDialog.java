@@ -42,11 +42,13 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import java.awt.Dimension;
 import java.awt.Window;
-import java.awt.event.ActionListener;
-import java.beans.EventHandler;
 import java.io.File;
 
-public class PasswordDialog extends JDialog {
+public class PasswordDialog extends JDialog implements EventListener<PasswordDialog.Event> {
+
+    public static enum Event {
+        SELECT, SUBMIT, CANCEL
+    }
 
     private JTextField fileField;
     private JPasswordField passField;
@@ -57,10 +59,14 @@ public class PasswordDialog extends JDialog {
 
     public PasswordDialog(JFrame owner, String title) {
         super(owner, title, true);
+
         this.fileField = new JTextField();
+
         this.passField = new JPasswordField();
-        this.passField.addActionListener(EventHandler.create(ActionListener.class, this, "clickSubmit"));
+        this.passField.addActionListener(EventAction.create(Event.SUBMIT, this));
+
         this.chooser = new JFileChooser();
+
         createDisplay();
         setResizable(false);
     }
@@ -76,9 +82,11 @@ public class PasswordDialog extends JDialog {
     public boolean showDialog(File file, boolean showOpen) {
         this.showOpen = showOpen;
         this.success = false;
+
         setupFields((file != null) ? file.getAbsolutePath() : "");
         centerOnOwner(getOwner());
         setVisible(true);
+
         return processFields();
     }
 
@@ -95,25 +103,19 @@ public class PasswordDialog extends JDialog {
         return null;
     }
 
-    public void clickSelect() {
-        File file = getFile();
-        if (file != null) {
-            chooser.setSelectedFile(file);
+    public void processEvent(Event event) {
+        switch (event) {
+            case SELECT:
+                selectFile();
+                break;
+            case SUBMIT:
+                success = true;
+                setVisible(false);
+                break;
+            case CANCEL:
+                setVisible(false);
+                break;
         }
-        int result = showOpen ? chooser.showOpenDialog(this) : chooser.showSaveDialog(this);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            fileField.setText(chooser.getSelectedFile().getAbsolutePath());
-            passField.requestFocusInWindow();
-        }
-    }
-
-    public void clickSubmit() {
-        success = true;
-        setVisible(false);
-    }
-
-    public void clickCancel() {
-        setVisible(false);
     }
 
     private void createDisplay() {
@@ -124,7 +126,7 @@ public class PasswordDialog extends JDialog {
         builder.addLabel("Please select a file and enter its password:", cc.xyw(1, 1, 5));
         builder.addLabel("File Name", cc.xy(1, 3));
         builder.add(fileField, cc.xy(3, 3));
-        builder.add(createButton("Select", "clickSelect"), cc.xy(5, 3));
+        builder.add(new JButton(EventAction.create("Select", Event.SELECT, this)), cc.xy(5, 3));
         builder.addLabel("Password", cc.xy(1, 5));
         builder.add(passField, cc.xy(3, 5));
         builder.add(createButtonPanel(), cc.xyw(1, 7, 5));
@@ -135,17 +137,11 @@ public class PasswordDialog extends JDialog {
     private JPanel createButtonPanel() {
         ButtonBarBuilder buttonBar = ButtonBarBuilder.createLeftToRightBuilder();
         buttonBar.addGlue();
-        buttonBar.addGridded(createButton("OK", "clickSubmit"));
+        buttonBar.addGridded(new JButton(EventAction.create("OK", Event.SUBMIT, this)));
         buttonBar.addRelatedGap();
-        buttonBar.addGridded(createButton("Cancel", "clickCancel"));
+        buttonBar.addGridded(new JButton(EventAction.create("Cancel", Event.CANCEL, this)));
         buttonBar.addGlue();
         return buttonBar.getPanel();
-    }
-
-    private JButton createButton(String title, String method) {
-        JButton button = new JButton(title);
-        button.addActionListener(EventHandler.create(ActionListener.class, this, method));
-        return button;
     }
 
     private void centerOnOwner(Window owner) {
@@ -165,15 +161,18 @@ public class PasswordDialog extends JDialog {
     }
 
     private boolean processFields() {
-        if (success) {
-            if (getFile() == null) {
-                return false;
-            }
-            if (getPassword() == null) {
-                return false;
-            }
-            return true;
+        return success && (getFile() != null) && (getPassword() != null);
+    }
+
+    private void selectFile() {
+        File file = getFile();
+        if (file != null) {
+            chooser.setSelectedFile(file);
         }
-        return false;
+        int result = showOpen ? chooser.showOpenDialog(this) : chooser.showSaveDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            fileField.setText(chooser.getSelectedFile().getAbsolutePath());
+            passField.requestFocusInWindow();
+        }
     }
 }

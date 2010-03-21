@@ -27,12 +27,10 @@
  */
 package com.tomczarniecki.jpasskeep;
 
-import java.awt.Toolkit;
-
 public class CopyUsernameAction extends CopyToCliboardAction {
 
-    public CopyUsernameAction(MainListController controller, Toolkit toolkit) {
-        super("Copy Username", controller, toolkit);
+    public CopyUsernameAction(MainListController controller, Display display) {
+        super("Copy Username", controller, display);
     }
 
     protected String getValue(Entry entry) {

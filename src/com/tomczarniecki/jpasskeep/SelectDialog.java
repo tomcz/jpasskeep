@@ -38,13 +38,15 @@ import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.event.ActionListener;
-import java.beans.EventHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class SelectDialog extends JDialog {
+public class SelectDialog extends JDialog implements EventListener<SelectDialog.Event> {
+
+    public static enum Event {
+        SELECT_ALL, CLEAR_ALL, SUBMIT, CANCEL
+    }
 
     private SelectTableModel model;
     private boolean success;
@@ -52,20 +54,23 @@ public class SelectDialog extends JDialog {
     public SelectDialog(JFrame parent, String title, List<Entry> entries) {
         super(parent, title, true);
         model = new SelectTableModel(entries);
-        setupView();
+        Container cc = getContentPane();
+        cc.setLayout(new BorderLayout());
+        cc.add(createDisplay(), BorderLayout.CENTER);
+        cc.add(createButtons(), BorderLayout.SOUTH);
+        setResizable(false);
+        pack();
     }
 
     public SelectDialog(JFrame parent, String title, List<Entry> entries, Map<String, ImportState> stateForEntries) {
         super(parent, title, true);
         model = new SelectTableModel(entries, stateForEntries);
-        setupView();
-    }
 
-    private void setupView() {
         Container cc = getContentPane();
         cc.setLayout(new BorderLayout());
         cc.add(createDisplay(), BorderLayout.CENTER);
         cc.add(createButtons(), BorderLayout.SOUTH);
+
         setResizable(false);
         pack();
     }
@@ -81,13 +86,22 @@ public class SelectDialog extends JDialog {
         }
     }
 
-    public void save() {
-        success = true;
-        setVisible(false);
-    }
-
-    public void cancel() {
-        setVisible(false);
+    public void processEvent(Event event) {
+        switch (event) {
+            case SELECT_ALL:
+                model.selectAll();
+                break;
+            case CLEAR_ALL:
+                model.deselectAll();
+                break;
+            case SUBMIT:
+                success = true;
+                setVisible(false);
+                break;
+            case CANCEL:
+                setVisible(false);
+                break;
+        }
     }
 
     private JScrollPane createDisplay() {
@@ -106,29 +120,18 @@ public class SelectDialog extends JDialog {
         buttonBar.setDefaultDialogBorder();
         buttonBar.addGlue();
 
-        JButton selectAll = new JButton("Select All");
-        selectAll.addActionListener(EventHandler.create(ActionListener.class, model, "selectAll"));
-        buttonBar.addGridded(selectAll);
-
+        buttonBar.addGridded(new JButton(EventAction.create("Select All", Event.SELECT_ALL, this)));
         buttonBar.addRelatedGap();
-
-        JButton deselectAll = new JButton("Clear All");
-        deselectAll.addActionListener(EventHandler.create(ActionListener.class, model, "deselectAll"));
-        buttonBar.addGridded(deselectAll);
+        buttonBar.addGridded(new JButton(EventAction.create("Clear All", Event.CLEAR_ALL, this)));
 
         buttonBar.addUnrelatedGap();
 
-        JButton saveButton = new JButton("OK");
-        saveButton.addActionListener(EventHandler.create(ActionListener.class, this, "save"));
-        buttonBar.addGridded(saveButton);
-
+        buttonBar.addGridded(new JButton(EventAction.create("OK", Event.SUBMIT, this)));
         buttonBar.addRelatedGap();
-
-        JButton cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(EventHandler.create(ActionListener.class, this, "cancel"));
-        buttonBar.addGridded(cancelButton);
+        buttonBar.addGridded(new JButton(EventAction.create("Cancel", Event.CANCEL, this)));
 
         buttonBar.addGlue();
         return buttonBar.getPanel();
     }
+
 }

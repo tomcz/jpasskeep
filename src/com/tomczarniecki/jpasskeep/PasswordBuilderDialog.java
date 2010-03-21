@@ -43,12 +43,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
-import java.awt.event.ActionListener;
-import java.beans.EventHandler;
 
-public class PasswordBuilderDialog extends JDialog {
+public class PasswordBuilderDialog extends JDialog implements EventListener<PasswordBuilderDialog.Event> {
 
-    private static final String CHECKBOX_ALIGNMENT = "right,default";
+    public static enum Event {
+        GENERATE, SUBMIT, CANCEL
+    }
 
     private final JCheckBox upperCaseField = new JCheckBox();
     private final JCheckBox lowerCaseField = new JCheckBox();
@@ -60,6 +60,7 @@ public class PasswordBuilderDialog extends JDialog {
 
     private final PasswordBuilder builder = new PasswordBuilder();
     private final PasswordBuilderModel model = new PasswordBuilderModel(builder);
+
     private final JList list = new JList(model);
 
     public PasswordBuilderDialog(JFrame owner) {
@@ -84,26 +85,18 @@ public class PasswordBuilderDialog extends JDialog {
         }
     }
 
-    public void submit() {
-        setVisible(false);
-    }
-
-    public void cancel() {
-        list.clearSelection();
-        setVisible(false);
-    }
-
-    public void generate() {
-        try {
-            int length = parseLength();
-            String alphabet = buildAlphabet();
-            builder.setLength(length);
-            builder.setAlphabet(alphabet);
-            builder.setPermitRepeats(allowRepeatsField.isSelected());
-            model.generate();
-
-        } catch (PasswordBuilderException e) {
-            JOptionPane.showMessageDialog(null, e.getMessage(), "Input Error", JOptionPane.ERROR_MESSAGE);
+    public void processEvent(Event event) {
+        switch (event) {
+            case GENERATE:
+                generate();
+                break;
+            case CANCEL:
+                list.clearSelection();
+                setVisible(false);
+                break;
+            case SUBMIT:
+                setVisible(false);
+                break;
         }
     }
 
@@ -123,23 +116,26 @@ public class PasswordBuilderDialog extends JDialog {
 
     private JPanel createDisplay(boolean showOK) {
         CellConstraints cc = new CellConstraints();
-        FormLayout layout = new FormLayout("15dlu,5dlu,pref,5dlu,100dlu",
-                "pref,5dlu,pref,5dlu,pref,5dlu,pref,5dlu,pref,5dlu,pref,5dlu,pref,10dlu,pref");
 
+        String rows = "pref,5dlu,pref,5dlu,pref,5dlu,pref,5dlu,pref,5dlu,pref,5dlu,pref,10dlu,pref";
+        String cols = "15dlu,5dlu,pref,5dlu,100dlu";
+        String checkboxDefaults = "right,default";
+
+        FormLayout layout = new FormLayout(cols, rows);
         PanelBuilder builder = new PanelBuilder(layout);
         builder.setDefaultDialogBorder();
 
-        builder.add(upperCaseField, cc.xy(1, 1, CHECKBOX_ALIGNMENT));
+        builder.add(upperCaseField, cc.xy(1, 1, checkboxDefaults));
         builder.addLabel("Upper case", cc.xy(3, 1));
-        builder.add(lowerCaseField, cc.xy(1, 3, CHECKBOX_ALIGNMENT));
+        builder.add(lowerCaseField, cc.xy(1, 3, checkboxDefaults));
         builder.addLabel("Lower case", cc.xy(3, 3));
-        builder.add(digitsField, cc.xy(1, 5, CHECKBOX_ALIGNMENT));
+        builder.add(digitsField, cc.xy(1, 5, checkboxDefaults));
         builder.addLabel("Digits", cc.xy(3, 5));
-        builder.add(specialCharsField, cc.xy(1, 7, CHECKBOX_ALIGNMENT));
+        builder.add(specialCharsField, cc.xy(1, 7, checkboxDefaults));
         builder.addLabel("Special chars", cc.xy(3, 7));
-        builder.add(nonConfusingField, cc.xy(1, 9, CHECKBOX_ALIGNMENT));
+        builder.add(nonConfusingField, cc.xy(1, 9, checkboxDefaults));
         builder.addLabel("Non-confusing", cc.xy(3, 9));
-        builder.add(allowRepeatsField, cc.xy(1, 11, CHECKBOX_ALIGNMENT));
+        builder.add(allowRepeatsField, cc.xy(1, 11, checkboxDefaults));
         builder.addLabel("Allow repeats", cc.xy(3, 11));
         builder.add(lengthField, cc.xy(1, 13));
         builder.addLabel("Length", cc.xy(3, 13));
@@ -153,24 +149,32 @@ public class PasswordBuilderDialog extends JDialog {
         ButtonBarBuilder buttonBar = ButtonBarBuilder.createLeftToRightBuilder();
         buttonBar.addGlue();
 
-        JButton generateButton = new JButton("Generate");
-        generateButton.addActionListener(EventHandler.create(ActionListener.class, this, "generate"));
-        buttonBar.addGridded(generateButton);
+        buttonBar.addGridded(new JButton(EventAction.create("Generate", Event.GENERATE, this)));
         buttonBar.addRelatedGap();
 
         if (showOK) {
-            JButton closeButton = new JButton("OK");
-            closeButton.addActionListener(EventHandler.create(ActionListener.class, this, "submit"));
-            buttonBar.addGridded(closeButton);
+            buttonBar.addGridded(new JButton(EventAction.create("OK", Event.SUBMIT, this)));
             buttonBar.addRelatedGap();
         }
 
-        JButton cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(EventHandler.create(ActionListener.class, this, "cancel"));
-        buttonBar.addGridded(cancelButton);
-
+        buttonBar.addGridded(new JButton(EventAction.create("Cancel", Event.CANCEL, this)));
         buttonBar.addGlue();
+
         return buttonBar.getPanel();
+    }
+
+    private void generate() {
+        try {
+            int length = parseLength();
+            String alphabet = buildAlphabet();
+            builder.setLength(length);
+            builder.setAlphabet(alphabet);
+            builder.setPermitRepeats(allowRepeatsField.isSelected());
+            model.generate();
+
+        } catch (PasswordBuilderException e) {
+            JOptionPane.showMessageDialog(getOwner(), e.getMessage(), "Input Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private int parseLength() throws PasswordBuilderException {

@@ -30,24 +30,24 @@ package com.tomczarniecki.jpasskeep;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.AbstractAction;
-import javax.swing.JFrame;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class PrintListAction extends AbstractAction {
 
-    private final JFrame parent;
     private final MainListController controller;
+    private final Display display;
 
-    public PrintListAction(MainListController controller, JFrame parent) {
+    public PrintListAction(MainListController controller, Display display) {
         super("Print List");
         this.controller = controller;
-        this.parent = parent;
+        this.display = display;
     }
 
     public void actionPerformed(ActionEvent e) {
-        SelectDialog selection = new SelectDialog(parent, "Select Entries to Print", controller.getEntries());
+        SelectDialog selection = display.createSelectDialog("Select Entries to Print", controller.getEntries());
         List<Entry> entries = selection.selectEntries();
         if (entries.isEmpty()) {
             return; // user cancelled
@@ -56,8 +56,7 @@ public class PrintListAction extends AbstractAction {
         for (Entry entry : entries) {
             formatEntry(text, entry);
         }
-        Printer printer = new Printer(parent, text);
-        new Thread(printer).start();
+        display.print(text);
     }
 
     private void formatEntry(List<String> text, Entry entry) {
@@ -67,9 +66,7 @@ public class PrintListAction extends AbstractAction {
         text.add("PASSWORD: " + entry.getPassword());
         if (StringUtils.isNotBlank(entry.getNotes())) {
             text.add("NOTES:");
-            for (String token : StringUtils.split(entry.getNotes(), "\n\r\f")) {
-                text.add(token);
-            }
+            text.addAll(Arrays.asList(StringUtils.split(entry.getNotes(), "\n\r\f")));
         }
         text.add(StringUtils.repeat("-", 30));
     }

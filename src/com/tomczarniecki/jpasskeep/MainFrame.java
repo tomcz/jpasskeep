@@ -27,6 +27,8 @@
  */
 package com.tomczarniecki.jpasskeep;
 
+import com.tomczarniecki.jpasskeep.crypto.EntryCipher;
+
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -38,8 +40,14 @@ import java.beans.EventHandler;
 
 public class MainFrame extends JFrame {
 
-    public MainFrame(MainListController controller, PreferenceSetter prefs) {
+    private final Display display;
+    private final EntryCipher cipher;
+
+    public MainFrame(MainListController controller, EntryCipher cipher, Worker worker, PreferenceSetter prefs) {
         super("Password Keeper");
+
+        this.display = new Display(this, worker);
+        this.cipher = cipher;
 
         MainDetailsArea details = new MainDetailsArea(controller);
 
@@ -52,6 +60,10 @@ public class MainFrame extends JFrame {
 
         prefs.setFramePrefs(this);
         prefs.setDisplayPrefs(display);
+    }
+
+    public Display getDisplay() {
+        return display;
     }
 
     private JSplitPane createDisplay(MainListController controller, MainDetailsArea details) {
@@ -74,10 +86,10 @@ public class MainFrame extends JFrame {
 
     private JMenu createListMenu(MainListController controller) {
         JMenu listMenu = new JMenu("List");
-        listMenu.add(new JMenuItem(new ImportListAction(controller, this)));
-        listMenu.add(new JMenuItem(new ExportListAction(controller, this)));
-        listMenu.add(new JMenuItem(new PrintListAction(controller, this)));
-        listMenu.add(new JMenuItem(new HtmlExportAction(controller, this)));
+        listMenu.add(new JMenuItem(new ImportListAction(controller, display, cipher)));
+        listMenu.add(new JMenuItem(new ExportListAction(controller, display, cipher)));
+        listMenu.add(new JMenuItem(new PrintListAction(controller, display)));
+        listMenu.add(new JMenuItem(new HtmlExportAction(controller, display)));
         return listMenu;
     }
 
@@ -85,19 +97,18 @@ public class MainFrame extends JFrame {
         JMenu entryMenu = new JMenu("Entry");
         entryMenu.add(new JMenuItem(new NewEntryAction(controller, new EntryDialog(this, "New Entry"))));
         entryMenu.add(new JMenuItem(new EditEntryAction(controller, new EntryDialog(this, "Edit Entry"))));
-        entryMenu.add(new JMenuItem(new DeleteEntryAction(controller, this, "Delete Entry")));
+        entryMenu.add(new JMenuItem(new DeleteEntryAction(controller, display, "Delete Entry")));
         return entryMenu;
     }
 
     private JMenu createCopyMenu(MainListController controller) {
         JMenu copyMenu = new JMenu("Copy");
-        copyMenu.add(new JMenuItem(new CopyUsernameAction(controller, getToolkit())));
-        copyMenu.add(new JMenuItem(new CopyPasswordAction(controller, getToolkit())));
+        copyMenu.add(new JMenuItem(new CopyUsernameAction(controller, display)));
+        copyMenu.add(new JMenuItem(new CopyPasswordAction(controller, display)));
         return copyMenu;
     }
 
     private JMenu createViewMenu(MainListController controller, MainDetailsArea details) {
-        PasswordBuilderDialog generator = new PasswordBuilderDialog(this);
         JMenu viewMenu = new JMenu("View");
         viewMenu.add(createToggleItem("Show Home Entries", controller, "showHome", controller.isShowHome()));
         viewMenu.add(createToggleItem("Show Work Entries", controller, "showWork", controller.isShowWork()));
@@ -106,20 +117,19 @@ public class MainFrame extends JFrame {
         viewMenu.add(createToggleItem("Show Passwords", details, "showPasswd", details.isShowPasswd()));
         viewMenu.add(createToggleItem("Show Notes", details, "showNotes", details.isShowNotes()));
         viewMenu.addSeparator();
-        viewMenu.add(createInvokeItem("Password Generator", generator, "display"));
+        viewMenu.add(createInvokeItem("Password Generator", new PasswordBuilderDialog(this), "display"));
         return viewMenu;
+    }
+
+    private JCheckBoxMenuItem createToggleItem(String label, Object target, String action, boolean selected) {
+        JCheckBoxMenuItem item = new JCheckBoxMenuItem(label, selected);
+        item.addActionListener(EventHandler.create(ActionListener.class, target, action, "source.selected"));
+        return item;
     }
 
     private JMenuItem createInvokeItem(String label, Object target, String action) {
         JMenuItem item = new JMenuItem(label);
         item.addActionListener(EventHandler.create(ActionListener.class, target, action));
-        return item;
-    }
-
-    private JCheckBoxMenuItem createToggleItem(String label, Object target, String action, boolean selected) {
-        JCheckBoxMenuItem item = new JCheckBoxMenuItem(label);
-        item.setSelected(selected);
-        item.addActionListener(EventHandler.create(ActionListener.class, target, action, "source.selected"));
         return item;
     }
 }

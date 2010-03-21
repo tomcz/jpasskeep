@@ -28,11 +28,9 @@
 package com.tomczarniecki.jpasskeep;
 
 import com.tomczarniecki.jpasskeep.crypto.CryptoException;
-import com.tomczarniecki.jpasskeep.crypto.CryptoUtils;
+import com.tomczarniecki.jpasskeep.crypto.EntryCipher;
 
 import javax.swing.AbstractAction;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import java.awt.event.ActionEvent;
 import java.util.HashMap;
 import java.util.List;
@@ -40,25 +38,28 @@ import java.util.Map;
 
 public class ImportListAction extends AbstractAction {
 
-    private JFrame parent;
-    private PasswordDialog dialog;
-    private MainListController controller;
+    private final MainListController controller;
+    private final Display display;
+    private final EntryCipher cipher;
 
-    public ImportListAction(MainListController controller, JFrame parent) {
+    public ImportListAction(MainListController controller, Display display, EntryCipher cipher) {
         super("Import List");
-        this.parent = parent;
-        this.dialog = new PasswordDialog(parent, "Import List");
         this.controller = controller;
+        this.display = display;
+        this.cipher = cipher;
     }
 
     public void actionPerformed(ActionEvent evt) {
+        PasswordDialog dialog = display.createPasswordDialog("Import List");
         if (dialog.showOpenDialog()) {
             try {
-                List<Entry> fileEntries = CryptoUtils.decrypt(dialog.getFile(), dialog.getPassword());
+                List<Entry> fileEntries = cipher.decrypt(dialog.getFile(), dialog.getPassword());
                 List<Entry> selectedEntries = selectEntries(fileEntries);
                 appendEntries(selectedEntries);
+
             } catch (CryptoException e) {
                 handleError("Import Error", "Invalid username/password", e);
+
             } catch (Exception e) {
                 handleError("Import Error", e.toString(), e);
             }
@@ -67,12 +68,12 @@ public class ImportListAction extends AbstractAction {
 
     private void handleError(String title, String message, Exception error) {
         error.printStackTrace();
-        JOptionPane.showMessageDialog(parent, message, title, JOptionPane.ERROR_MESSAGE);
+        display.showErrorMessage(title, message);
     }
 
     private List<Entry> selectEntries(List<Entry> entries) {
         Map<String, ImportState> stateForEntries = findStateForEntries(entries);
-        SelectDialog dialog = new SelectDialog(parent, "Select Entries to Import", entries, stateForEntries);
+        SelectDialog dialog = display.createSelectDialog("Select Entries to Import", entries, stateForEntries);
         return dialog.selectEntries();
     }
 

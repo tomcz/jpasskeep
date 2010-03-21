@@ -32,38 +32,34 @@ import com.tomczarniecki.jpasskeep.crypto.LightGibberishAESCrypt;
 import com.tomczarniecki.jpasskeep.html.Template;
 import com.tomczarniecki.jpasskeep.html.TemplateFactory;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.Validate;
 
 import javax.swing.AbstractAction;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.InputStream;
 import java.util.List;
+
+import static com.tomczarniecki.jpasskeep.resources.Resource.loadResource;
 
 public class HtmlExportAction extends AbstractAction {
 
-    private JFrame parent;
-    private PasswordDialog dialog;
-    private MainListController controller;
-    private TemplateFactory factory;
+    private final MainListController controller;
+    private final TemplateFactory factory;
+    private final Display display;
 
-    public HtmlExportAction(MainListController controller, JFrame parent) {
+    public HtmlExportAction(MainListController controller, Display display) {
         super("Export HTML");
-        this.parent = parent;
         this.factory = new TemplateFactory();
-        this.dialog = new PasswordDialog(parent, "Export HTML");
         this.controller = controller;
+        this.display = display;
     }
 
     public void actionPerformed(ActionEvent evt) {
-        SelectDialog selection = new SelectDialog(parent, "Select Entries to Export", controller.getEntries());
+        SelectDialog selection = display.createSelectDialog("Select Entries to Export", controller.getEntries());
         List<Entry> entries = selection.selectEntries();
         if (entries.isEmpty()) {
             return; // user cancelled
         }
+        PasswordDialog dialog = display.createPasswordDialog("Export HTML");
         if (dialog.showSaveDialog()) {
             try {
                 File file = dialog.getFile();
@@ -75,11 +71,11 @@ public class HtmlExportAction extends AbstractAction {
                 String entriesPage = createEntriesPage(cipherText);
                 FileUtils.writeStringToFile(file, entriesPage, "UTF-8");
 
-                JOptionPane.showMessageDialog(parent, "Created " + file, "Success", JOptionPane.INFORMATION_MESSAGE);
+                display.showInfoMessage("Success", "Created " + file);
 
             } catch (Exception e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(parent, e.toString(), "Export Error", JOptionPane.ERROR_MESSAGE);
+                display.showErrorMessage("Export Error", e.toString());
             }
         }
     }
@@ -98,15 +94,5 @@ public class HtmlExportAction extends AbstractAction {
         template.set("css", loadResource("jpasskeep-min.css"));
         template.set("cipherText", cipherText);
         return template.toString();
-    }
-
-    private String loadResource(String name) throws Exception {
-        InputStream input = getClass().getResourceAsStream("/com/tomczarniecki/jpasskeep/resources/" + name);
-        Validate.isTrue(input != null, "Cannot find resource: " + name);
-        try {
-            return IOUtils.toString(input, "UTF-8");
-        } finally {
-            IOUtils.closeQuietly(input);
-        }
     }
 }

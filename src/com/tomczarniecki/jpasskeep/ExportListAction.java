@@ -27,43 +27,42 @@
  */
 package com.tomczarniecki.jpasskeep;
 
-import com.tomczarniecki.jpasskeep.crypto.CryptoUtils;
+import com.tomczarniecki.jpasskeep.crypto.EntryCipher;
 
 import javax.swing.AbstractAction;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.List;
 
 public class ExportListAction extends AbstractAction {
 
-    private JFrame parent;
-    private PasswordDialog dialog;
-    private MainListController controller;
+    private final MainListController controller;
+    private final Display display;
+    private final EntryCipher cipher;
 
-    public ExportListAction(MainListController controller, JFrame parent) {
+    public ExportListAction(MainListController controller, Display display, EntryCipher cipher) {
         super("Export List");
-        this.parent = parent;
-        this.dialog = new PasswordDialog(parent, "Export List");
         this.controller = controller;
+        this.display = display;
+        this.cipher = cipher;
     }
 
     public void actionPerformed(ActionEvent evt) {
-        SelectDialog selection = new SelectDialog(parent, "Select Entries to Export", controller.getEntries());
+        SelectDialog selection = display.createSelectDialog("Select Entries to Export", controller.getEntries());
         List<Entry> entries = selection.selectEntries();
         if (entries.isEmpty()) {
             return; // user cancelled
         }
+        PasswordDialog dialog = display.createPasswordDialog("Export List");
         if (dialog.showSaveDialog()) {
             try {
                 File file = dialog.getFile();
-                CryptoUtils.encrypt(entries, file, dialog.getPassword());
-                JOptionPane.showMessageDialog(parent, "Created " + file, "Success", JOptionPane.INFORMATION_MESSAGE);
+                cipher.encrypt(entries, file, dialog.getPassword());
+                display.showInfoMessage("Success", "Created " + file);
 
             } catch (Exception e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(parent, e.toString(), "Export Error", JOptionPane.ERROR_MESSAGE);
+                display.showErrorMessage("Export Error", e.toString());
             }
         }
     }

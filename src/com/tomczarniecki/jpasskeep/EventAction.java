@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005-2009, Thomas Czarniecki
+ * Copyright (c) 2005-2010, Thomas Czarniecki
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
@@ -27,13 +27,26 @@
  */
 package com.tomczarniecki.jpasskeep;
 
-public class CopyPasswordAction extends CopyToCliboardAction {
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-    public CopyPasswordAction(MainListController controller, Display display) {
-        super("Copy Password", controller, display);
+public class EventAction {
+
+    public static <T> Action create(final String name, final T event, final EventListener<T> listener) {
+        return new AbstractAction(name) {
+            public void actionPerformed(ActionEvent e) {
+                listener.processEvent(event);
+            }
+        };
     }
 
-    protected String getValue(Entry entry) {
-        return entry.getPassword();
+    public static <T> ActionListener create(final T event, final EventListener<T> listener) {
+        return new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                listener.processEvent(event);
+            }
+        };
     }
 }

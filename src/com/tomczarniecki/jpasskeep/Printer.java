@@ -27,9 +27,6 @@
  */
 package com.tomczarniecki.jpasskeep;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -44,15 +41,18 @@ import java.util.List;
 public class Printer implements Runnable, Printable {
 
     private final List<String> text;
-    private final JFrame parent;
+    private final Display display;
+    private final Worker worker;
 
     private List pages;
     private Font font;
     private PageFormat pf;
 
-    public Printer(JFrame parent, List<String> text) {
-        this.parent = parent;
+    public Printer(Display display, Worker worker, List<String> text) {
+        this.display = display;
+        this.worker = worker;
         this.text = text;
+
         this.pages = new ArrayList();
         this.font = new Font("Monospaced", Font.PLAIN, 8);
     }
@@ -77,9 +77,9 @@ public class Printer implements Runnable, Printable {
     }
 
     private void displayError(final Exception error) {
-        SwingUtilities.invokeLater(new Runnable() {
+        worker.runOnEventLoop(new Runnable() {
             public void run() {
-                JOptionPane.showMessageDialog(parent, error.toString(), "Print Error", JOptionPane.ERROR_MESSAGE);
+                display.showErrorMessage("Print Error", error.toString());
             }
         });
     }
