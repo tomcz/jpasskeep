@@ -54,25 +54,13 @@ public class SelectDialog extends JDialog implements EventListener<SelectDialog.
     public SelectDialog(JFrame parent, String title, List<Entry> entries) {
         super(parent, title, true);
         model = new SelectTableModel(entries);
-        Container cc = getContentPane();
-        cc.setLayout(new BorderLayout());
-        cc.add(createDisplay(), BorderLayout.CENTER);
-        cc.add(createButtons(), BorderLayout.SOUTH);
-        setResizable(false);
-        pack();
+        setupView();
     }
 
     public SelectDialog(JFrame parent, String title, List<Entry> entries, Map<String, ImportState> stateForEntries) {
         super(parent, title, true);
         model = new SelectTableModel(entries, stateForEntries);
-
-        Container cc = getContentPane();
-        cc.setLayout(new BorderLayout());
-        cc.add(createDisplay(), BorderLayout.CENTER);
-        cc.add(createButtons(), BorderLayout.SOUTH);
-
-        setResizable(false);
-        pack();
+        setupView();
     }
 
     public List<Entry> selectEntries() {
@@ -104,6 +92,15 @@ public class SelectDialog extends JDialog implements EventListener<SelectDialog.
         }
     }
 
+    private void setupView() {
+        Container cc = getContentPane();
+        cc.setLayout(new BorderLayout());
+        cc.add(createDisplay(), BorderLayout.CENTER);
+        cc.add(createButtons(), BorderLayout.SOUTH);
+        setResizable(false);
+        pack();
+    }
+
     private JScrollPane createDisplay() {
         JTable table = new JTable(model);
         TableColumnModel columnModel = table.getColumnModel();
@@ -133,5 +130,4 @@ public class SelectDialog extends JDialog implements EventListener<SelectDialog.
         buttonBar.addGlue();
         return buttonBar.getPanel();
     }
-
 }
