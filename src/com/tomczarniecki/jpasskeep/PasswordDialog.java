@@ -157,7 +157,11 @@ public class PasswordDialog extends JDialog implements EventListener<PasswordDia
     private void setupFields(String fileName) {
         fileField.setText(fileName);
         passField.setText("");
-        passField.requestFocusInWindow();
+        if (StringUtils.isEmpty(fileName)) {
+            fileField.requestFocusInWindow();
+        } else {
+            passField.requestFocusInWindow();
+        }
     }
 
     private boolean processFields() {
