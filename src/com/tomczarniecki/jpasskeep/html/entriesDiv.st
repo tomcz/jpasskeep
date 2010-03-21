@@ -19,9 +19,9 @@
         </div>
         <div class="notes">
             <span class="label">Notes:</span><br />
-        <span class="field">
-            $entry.notesAsLines:{ line | $line$<br /> }$
-        </span>
+            <span class="field">
+                $entry.notesAsLines:{ line | $line$<br /> }$
+            </span>
         </div>
     </div>
     }$
