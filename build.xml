@@ -33,7 +33,7 @@
 
     <target name="compile">
         <mkdir dir="${classes.dir}" />
-        <javac destdir="${classes.dir}" srcdir="${src.dir}" classpathref="compile-classpath" debug="yes" />
+        <javac destdir="${classes.dir}" srcdir="${src.dir}" classpathref="compile-classpath" includeantruntime="no" debug="yes" />
         <copy todir="${classes.dir}">
             <fileset dir="${src.dir}" excludes="**/*.java" />
         </copy>
@@ -80,7 +80,7 @@
 
     <target name="create-app" depends="check-for-mac" if="mac.os.available">
         <taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler">
-            <classpath location="lib/ant/jarbundler-1.8.1.jar" />
+            <classpath location="lib/ant/jarbundler-2.1.0.jar" />
         </taskdef>
         <mkdir dir="${app.dir}" />
         <jarbundler dir="${app.dir}"
