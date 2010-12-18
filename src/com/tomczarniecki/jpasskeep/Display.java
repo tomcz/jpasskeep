@@ -40,7 +40,7 @@ import static javax.swing.JOptionPane.YES_OPTION;
 import static javax.swing.JOptionPane.showConfirmDialog;
 import static javax.swing.JOptionPane.showMessageDialog;
 
-public class Display {
+public class Display implements ErrorDisplay {
 
     private final JFrame frame;
     private final Worker worker;
@@ -82,6 +82,14 @@ public class Display {
     }
 
     public void print(List<String> text) {
-        worker.runInBackground(new Printer(this, worker, text));
+        worker.runInBackground(new Printer(this, text));
+    }
+
+    public void displayError(final String title, final String message) {
+        worker.runOnEventLoop(new Runnable() {
+            public void run() {
+                showErrorMessage(title, message);
+            }
+        });
     }
 }

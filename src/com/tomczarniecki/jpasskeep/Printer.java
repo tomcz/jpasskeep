@@ -40,17 +40,15 @@ import java.util.List;
 
 public class Printer implements Runnable, Printable {
 
+    private final ErrorDisplay display;
     private final List<String> text;
-    private final Display display;
-    private final Worker worker;
 
     private List pages;
     private Font font;
     private PageFormat pf;
 
-    public Printer(Display display, Worker worker, List<String> text) {
+    public Printer(ErrorDisplay display, List<String> text) {
         this.display = display;
-        this.worker = worker;
         this.text = text;
 
         this.pages = new ArrayList();
@@ -72,16 +70,8 @@ public class Printer implements Runnable, Printable {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            displayError(e);
+            display.displayError("Print Error", e.toString());
         }
-    }
-
-    private void displayError(final Exception error) {
-        worker.runOnEventLoop(new Runnable() {
-            public void run() {
-                display.showErrorMessage("Print Error", error.toString());
-            }
-        });
     }
 
     @SuppressWarnings("unchecked")
