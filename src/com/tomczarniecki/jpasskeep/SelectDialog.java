@@ -30,6 +30,7 @@ package com.tomczarniecki.jpasskeep;
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -38,6 +39,8 @@ import javax.swing.JTable;
 import javax.swing.table.TableColumnModel;
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +48,7 @@ import java.util.Map;
 public class SelectDialog extends JDialog implements EventListener<SelectDialog.Event> {
 
     public static enum Event {
-        SELECT_ALL, CLEAR_ALL, SUBMIT, CANCEL
+        SUBMIT, CANCEL
     }
 
     private SelectTableModel model;
@@ -76,12 +79,6 @@ public class SelectDialog extends JDialog implements EventListener<SelectDialog.
 
     public void processEvent(Event event) {
         switch (event) {
-            case SELECT_ALL:
-                model.selectAll();
-                break;
-            case CLEAR_ALL:
-                model.deselectAll();
-                break;
             case SUBMIT:
                 success = true;
                 setVisible(false);
@@ -117,9 +114,7 @@ public class SelectDialog extends JDialog implements EventListener<SelectDialog.
         buttonBar.setDefaultDialogBorder();
         buttonBar.addGlue();
 
-        buttonBar.addGridded(new JButton(EventAction.create("Select All", Event.SELECT_ALL, this)));
-        buttonBar.addRelatedGap();
-        buttonBar.addGridded(new JButton(EventAction.create("Clear All", Event.CLEAR_ALL, this)));
+        addCategories(buttonBar);
 
         buttonBar.addUnrelatedGap();
 
@@ -129,5 +124,22 @@ public class SelectDialog extends JDialog implements EventListener<SelectDialog.
 
         buttonBar.addGlue();
         return buttonBar.getPanel();
+    }
+
+    private void addCategories(ButtonBarBuilder buttonBar) {
+        for (Category category : Category.values()) {
+            addCategory(buttonBar, category);
+        }
+    }
+
+    private void addCategory(ButtonBarBuilder buttonBar, final Category category) {
+        final JCheckBox checkBox = new JCheckBox(category.name(), true);
+        buttonBar.addGridded(checkBox);
+
+        checkBox.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                model.toggle(category, checkBox.isSelected());
+            }
+        });
     }
 }

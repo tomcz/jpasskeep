@@ -111,20 +111,6 @@ public class SelectTableModel extends AbstractTableModel {
         fireTableCellUpdated(rowIndex, columnIndex);
     }
 
-    public void selectAll() {
-        for (ModelEntry model : entries) {
-            model.selected = true;
-        }
-        fireTableDataChanged();
-    }
-
-    public void deselectAll() {
-        for (ModelEntry model : entries) {
-            model.selected = false;
-        }
-        fireTableDataChanged();
-    }
-
     public List<Entry> getSelectedEntries() {
         List<Entry> selectedEntries = new ArrayList<Entry>();
         for (ModelEntry model : entries) {
@@ -135,9 +121,18 @@ public class SelectTableModel extends AbstractTableModel {
         return selectedEntries;
     }
 
+    public void toggle(Category category, boolean selected) {
+        for (ModelEntry entry : entries) {
+            if (entry.entry.getCategory().equals(category)) {
+                entry.selected = selected;
+            }
+        }
+        fireTableDataChanged();
+    }
+
     private class ModelEntry {
-        Entry entry;
-        boolean selected;
         ImportState state;
+        boolean selected;
+        Entry entry;
     }
 }
