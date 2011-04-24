@@ -1,17 +1,15 @@
 <?xml version="1.0"?>
 <project name="JPasskeep" default="build" basedir=".">
 
-    <tstamp>
-        <format property="release.version" pattern="yyyyMMdd" />
-    </tstamp>
-
-    <property name="application.name" value="${ant.project.name}-${release.version}" />
     <property name="main.class" value="com.tomczarniecki.jpasskeep.Main" />
 
     <property name="src.dir" location="src" />
+    <property name="test.dir" location="test" />
 
     <property name="output.dir" location="build" />
-    <property name="classes.dir" location="${output.dir}/classes" />
+    <property name="report.dir" location="${output.dir}/report" />
+    <property name="main.classes.dir" location="${output.dir}/main-classes" />
+    <property name="test.classes.dir" location="${output.dir}/test-classes" />
 
     <property name="jar.dir" location="${output.dir}/jar" />
     <property name="zip.dir" location="${output.dir}/zip" />
@@ -25,30 +23,94 @@
         <fileset refid="runtime-jars" />
     </path>
 
-    <target name="build" depends="clean,compile,create-jar,create-zip,create-app" />
+    <path id="test-classpath">
+        <pathelement location="${test.classes.dir}" />
+        <pathelement location="${main.classes.dir}" />
+        <fileset dir="lib/buildtime" includes="*.jar" />
+        <path refid="compile-classpath" />
+    </path>
+
+    <target name="build" depends="clean,check-tests,make-jar,make-zip,make-app" description="Create distributable bundles." />
+
+    <target name="ci-build" depends="git-revision,build" description="Target for CI build server." />
 
     <target name="clean">
         <delete dir="${output.dir}" />
     </target>
 
-    <target name="compile">
-        <mkdir dir="${classes.dir}" />
-        <javac destdir="${classes.dir}" srcdir="${src.dir}" classpathref="compile-classpath" includeantruntime="no" debug="yes" />
-        <copy todir="${classes.dir}">
-            <fileset dir="${src.dir}" excludes="**/*.java" />
-        </copy>
+    <target name="git-revision">
+        <exec executable="git" dir="${basedir}" failonerror="yes" outputproperty="release.version">
+            <arg value="rev-parse" />
+            <arg value="HEAD" />
+        </exec>
     </target>
 
-    <target name="create-jar">
+    <target name="release-version" unless="release.version">
+        <tstamp>
+            <format property="release.version" pattern="yyyyMMdd" />
+        </tstamp>
+    </target>
+
+    <macrodef name="compile">
+        <attribute name="srcdir" />
+        <attribute name="destdir" />
+        <attribute name="classpath" />
+        <sequential>
+            <mkdir dir="@{destdir}" />
+            <javac srcdir="@{srcdir}" destdir="@{destdir}" classpathref="@{classpath}" includeantruntime="no" debug="yes" />
+            <copy todir="@{destdir}" overwrite="yes" includeemptydirs="no">
+                <fileset dir="@{srcdir}">
+                    <exclude name="**/*.java" />
+                </fileset>
+            </copy>
+        </sequential>
+    </macrodef>
+
+    <target name="compile" depends="release-version">
+        <property name="application.name" value="${ant.project.name}-${release.version}" />
+        <compile srcdir="${src.dir}" destdir="${main.classes.dir}" classpath="compile-classpath" />
+        <compile srcdir="${test.dir}" destdir="${test.classes.dir}" classpath="test-classpath" />
+    </target>
+
+    <target name="run-tests" depends="compile" unless="skip.tests"
+            description="Run all tests. Use -Dtestcase=SomeTestClassName to specify a single test.">
+        <mkdir dir="${report.dir}" />
+        <junit fork="yes" forkmode="once" printsummary="yes" haltonfailure="no" failureproperty="tests.failed">
+            <classpath refid="test-classpath" />
+            <formatter type="xml" />
+            <batchtest if="testcase" todir="${report.dir}">
+                <fileset dir="${test.dir}">
+                    <include name="**/${testcase}.java" />
+                </fileset>
+            </batchtest>
+            <batchtest unless="testcase" todir="${report.dir}">
+                <fileset dir="${test.dir}">
+                    <include name="**/*Tests.java" />
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
+    <target name="check-tests" depends="run-tests" if="tests.failed">
+        <junitreport todir="${report.dir}">
+            <fileset dir="${report.dir}" includes="TEST-*.xml" />
+            <report todir="${report.dir}/html" />
+        </junitreport>
+        <fail message="One or more tests failed. Please check the test report for more info." />
+    </target>
+
+    <target name="make-jar" depends="compile">
         <mkdir dir="${jar.dir}" />
-        <jar destfile="${jar.dir}/main.jar" basedir="${classes.dir}">
+        <jar destfile="${jar.dir}/main.jar" basedir="${main.classes.dir}">
             <manifest>
                 <attribute name="Main-Class" value="${main.class}" />
+                <attribute name="Implementation-Title" value="${ant.project.name}" />
+                <attribute name="Implementation-Version" value="${release.version}" />
             </manifest>
         </jar>
     </target>
 
-    <target name="create-zip">
+    <target name="make-zip" depends="make-jar">
         <taskdef name="one-jar" classname="com.simontuffs.onejar.ant.OneJarTask">
             <classpath location="lib/ant/one-jar-ant-task-0.96.jar" />
         </taskdef>
@@ -78,7 +140,7 @@
         </condition>
     </target>
 
-    <target name="create-app" depends="check-for-mac" if="mac.os.available">
+    <target name="make-app" depends="check-for-mac,make-jar" if="mac.os.available">
         <taskdef name="jarbundler" classname="net.sourceforge.jarbundler.JarBundler">
             <classpath location="lib/ant/jarbundler-2.1.0.jar" />
         </taskdef>
