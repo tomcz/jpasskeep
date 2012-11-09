@@ -1,0 +1,132 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
+apply plugin: 'java'
+apply plugin: 'idea'
+
+defaultTasks 'clean', 'build', 'makezip', 'makeapp'
+
+version = '1.8.1'
+
+project.ext.mainClassName = 'com.tomczarniecki.jpasskeep.Main'
+project.ext.applicationName = "${project.name}-${version}"
+
+repositories {
+  mavenCentral()
+}
+
+configurations {
+  compress
+}
+
+dependencies {
+
+  compile 'org.jdom:jdom:1.1.3'
+  compile 'com.jgoodies:forms:1.2.1'
+  compile 'commons-io:commons-io:2.4'
+  compile 'commons-lang:commons-lang:2.6'
+  compile 'org.antlr:stringtemplate:3.2.1'
+  compile 'commons-codec:commons-codec:1.7'
+  compile 'org.bouncycastle:bcprov-jdk16:1.46'
+
+  testCompile 'junit:junit:4.10'
+
+  compress 'com.yahoo.platform.yui:yuicompressor:2.4.7'
+}
+
+task(run, type: JavaExec, dependsOn: 'classes') {
+  classpath = sourceSets.main.runtimeClasspath
+  main = project.ext.mainClassName
+}
+
+task(compressjs, type: JavaExec) {
+  classpath = configurations.compress
+  main = 'com.yahoo.platform.yui.compressor.Bootstrap'
+  args('-o src/main/resources/com/tomczarniecki/jpasskeep/resources/jpasskeep-min.js javascript/jpasskeep.js'.split(' '))
+}
+
+task(compresscss, type: JavaExec) {
+  classpath = configurations.compress
+  main = 'com.yahoo.platform.yui.compressor.Bootstrap'
+  args('-o src/main/resources/com/tomczarniecki/jpasskeep/resources/jpasskeep-min.css javascript/jpasskeep.css'.split(' '))
+}
+
+jar {
+  archiveName = 'main.jar'
+  manifest {
+    attributes(
+        'Main-Class': project.ext.mainClassName,
+        'Implementation-Title': project.name,
+        'Implementation-Version': version
+    )
+  }
+}
+
+task(makezip, dependsOn: 'jar') << {
+  def self = project
+  ant {
+    taskdef(name: 'onejar', classname: 'com.simontuffs.onejar.ant.OneJarTask') {
+      classpath { fileset(dir: 'etc/one-jar') }
+    }
+    onejar(destfile: "${jar.destinationDir}/${self.name}.jar") {
+      manifest {
+        attribute(name: 'Implementation-Title', value: self.name)
+        attribute(name: 'Implementation-Version', value: self.version)
+      }
+      main(jar: jar.archivePath)
+      lib {
+        configurations.compile.addToAntBuilder(ant, 'fileset', FileCollection.AntType.FileSet)
+      }
+      fileset(dir: self.projectDir) {
+        include(name: 'LICENSE*')
+      }
+    }
+    mkdir(dir: self.distsDir)
+    zip(destfile: "${self.distsDir}/${self.ext.applicationName}.zip") {
+      zipfileset(prefix: self.ext.applicationName, dir: jar.destinationDir) {
+        include(name: "${self.name}.jar")
+      }
+      zipfileset(prefix: self.ext.applicationName, dir: self.projectDir) {
+        include(name: 'LICENSE*')
+        include(name: 'README*')
+      }
+    }
+  }
+}
+
+task(makeapp, dependsOn: 'jar') << {
+  def appDir = "${buildDir}/${project.name}"
+  def self = project
+  ant {
+    taskdef(name: 'jarbundler', classname: 'net.sourceforge.jarbundler.JarBundler') {
+      classpath { fileset(dir: 'etc/jarbundler') }
+    }
+    mkdir(dir: appDir)
+    jarbundler(dir: appDir, name: self.name, mainclass: self.ext.mainClassName, icon: 'etc/gir.icns', jvmversion: '1.5+', version: self.version) {
+      configurations.compile.addToAntBuilder(ant, 'jarfileset', FileCollection.AntType.FileSet)
+      jarfileset(dir: jar.destinationDir, includes: jar.archiveName)
+    }
+    copy(todir: appDir) {
+      fileset(dir: self.projectDir) {
+        include(name: 'LICENSE*')
+        include(name: 'README*')
+      }
+    }
+    mkdir(dir: self.distsDir)
+    exec(executable: 'hdiutil', failonerror: 'yes') {
+      arg(value: 'create')
+      arg(value: '-srcfolder')
+      arg(value: appDir)
+      arg(value: "${self.distsDir}/${self.ext.applicationName}.dmg")
+    }
+  }
+}
+
+makeapp.onlyIf {
+  Os.isFamily(Os.FAMILY_MAC)
+}
+
+/*
+task(wrapper, type: Wrapper) {
+  gradleVersion = '1.2'
+}
+*/
