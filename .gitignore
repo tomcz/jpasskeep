@@ -2,5 +2,7 @@
 test.txt
 .gradle
 *.iws
+*.iml
+*.ipr
 build
 out
