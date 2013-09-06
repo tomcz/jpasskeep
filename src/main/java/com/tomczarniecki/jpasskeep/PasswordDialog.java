@@ -66,6 +66,7 @@ public class PasswordDialog extends JDialog implements EventListener<PasswordDia
         this.passField.addActionListener(EventAction.create(Event.SUBMIT, this));
 
         this.chooser = new JFileChooser();
+        this.chooser.setDialogTitle(title);
 
         createDisplay();
         setResizable(false);

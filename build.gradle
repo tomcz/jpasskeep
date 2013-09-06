@@ -27,6 +27,7 @@ dependencies {
   compile 'org.antlr:stringtemplate:3.2.1'
   compile 'commons-codec:commons-codec:1.7'
   compile 'org.bouncycastle:bcprov-jdk16:1.46'
+  compile 'net.sf.opencsv:opencsv:2.3'
 
   testCompile 'junit:junit:4.10'
 

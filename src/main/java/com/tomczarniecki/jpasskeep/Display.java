@@ -27,9 +27,11 @@
  */
 package com.tomczarniecki.jpasskeep;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -79,6 +81,16 @@ public class Display implements ErrorDisplay {
 
     public void showErrorMessage(String title, String message) {
         showMessageDialog(frame, message, title, ERROR_MESSAGE);
+    }
+
+    public File showFileChooser(String title) {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle(title);
+        int result = chooser.showSaveDialog(frame);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            return chooser.getSelectedFile();
+        }
+        return null;
     }
 
     public void print(List<String> text) {
