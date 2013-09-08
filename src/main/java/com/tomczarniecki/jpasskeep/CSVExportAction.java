@@ -6,8 +6,9 @@ import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.List;
+
+import static org.apache.commons.io.IOUtils.closeQuietly;
 
 public class CSVExportAction extends AbstractAction {
 
@@ -44,19 +45,12 @@ public class CSVExportAction extends AbstractAction {
         CSVWriter writer = null;
         try {
             writer = new CSVWriter(new FileWriter(file), ',');
-            writer.writeNext(array("description", "username", "password", "category", "notes"));
             for (Entry entry : entries) {
                 writer.writeNext(array(entry.getDescription(), entry.getUsername(),
                         entry.getPassword(), entry.getCategoryName(), entry.getNotes()));
             }
         } finally {
-            if (writer != null) {
-                try {
-                    writer.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
+            closeQuietly(writer);
         }
     }
 
