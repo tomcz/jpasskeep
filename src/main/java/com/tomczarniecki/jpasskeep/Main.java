@@ -32,6 +32,7 @@ import com.tomczarniecki.jpasskeep.crypto.EntryCipher;
 import org.apache.commons.lang.SystemUtils;
 
 import javax.swing.JFrame;
+import javax.swing.UIManager;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +56,15 @@ public class Main {
     private final EntryCipher cipher = new EntryCipher();
 
     public static void main(String[] args) {
+        if (SystemUtils.IS_OS_MAC_OSX) {
+            System.setProperty("apple.laf.useScreenMenuBar", "false");
+            System.setProperty("apple.eawt.quitStrategy", "CLOSE_ALL_WINDOWS");
+        }
+        try {
+            UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
+        } catch (Exception e) {
+            // not to worry, can still use platform default L&F
+        }
         Main application = new Main();
         application.start(args);
     }
@@ -97,7 +107,6 @@ public class Main {
         controller.addMouseListener(menu);
 
         QuitHandler quit = new CompositeQuitHandler(prefs, new SaveEntriesOnQuit());
-        OsxQuitAdaptor.setQuitHandler(quit);
 
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.addWindowListener(new WindowCloseListener(quit));
