@@ -2,17 +2,17 @@
 
 GIT_SHA ?= $(shell git rev-parse --short=7 HEAD)
 
-build-jar:
-	./gradlew --console plain -Pversion=${GIT_SHA} clean test shadowJar
+build-jar: clean
+	./gradlew --console plain -Pversion=${GIT_SHA} test shadowJar
 
-build-dmg:
-	./gradlew --console plain -Pversion=${GIT_SHA} clean test createDmg
+build-dmg: clean
+	./gradlew --console plain -Pversion=${GIT_SHA} test createDmg
 
 clean:
-	./gradlew clean
+	./gradlew --console plain clean
 
 test:
-	./gradlew test
+	./gradlew --console plain test
 
 deps:
 	./gradlew dependencies
