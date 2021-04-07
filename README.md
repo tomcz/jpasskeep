@@ -4,12 +4,6 @@ JPasskeep
 A Java-based password generation and storage application. Created as an exercise in practical Java cryptograpy API
 usage and because I don't really trust others with my passwords.
 
-Download
---------
-
-* Latest [Mac DMG](http://archives.watchitlater.com/projects/JPasskeep-latest.dmg)
-* Latest [Zip bundle](http://archives.watchitlater.com/projects/JPasskeep-latest.zip)
-
 Usage
 -----
 
