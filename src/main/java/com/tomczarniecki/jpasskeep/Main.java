@@ -27,12 +27,12 @@
  */
 package com.tomczarniecki.jpasskeep;
 
+import com.formdev.flatlaf.FlatDarkLaf;
 import com.tomczarniecki.jpasskeep.crypto.CryptoException;
 import com.tomczarniecki.jpasskeep.crypto.EntryCipher;
 import org.apache.commons.lang.SystemUtils;
 
 import javax.swing.JFrame;
-import javax.swing.UIManager;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,11 +60,7 @@ public class Main {
             System.setProperty("apple.laf.useScreenMenuBar", "false");
             System.setProperty("apple.eawt.quitStrategy", "CLOSE_ALL_WINDOWS");
         }
-        try {
-            UIManager.setLookAndFeel("com.jgoodies.looks.plastic.PlasticXPLookAndFeel");
-        } catch (Exception e) {
-            // not to worry, can still use platform default L&F
-        }
+        FlatDarkLaf.install();
         Main application = new Main();
         application.start(args);
     }

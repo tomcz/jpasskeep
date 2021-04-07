@@ -19,8 +19,8 @@ configurations {
 dependencies {
 
   compile 'org.jdom:jdom:1.1.3'
-  compile 'com.jgoodies:looks:2.2.2'
   compile 'com.jgoodies:forms:1.2.1'
+  compile 'com.formdev:flatlaf:1.1.1'
   compile 'commons-io:commons-io:2.4'
   compile 'commons-lang:commons-lang:2.6'
   compile 'org.antlr:stringtemplate:3.2.1'
