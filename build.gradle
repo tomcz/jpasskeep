@@ -1,6 +1,5 @@
 plugins {
   id 'com.github.johnrengelman.shadow' version '5.2.0'
-  id 'edu.sc.seis.macAppBundle' version '2.3.0'
   id 'java'
 }
 
@@ -52,9 +51,4 @@ jar {
       'Implementation-Version': version?: 'dev'
     )
   }
-}
-
-macAppBundle {
-  mainClassName = 'com.tomczarniecki.jpasskeep.Main'
-  icon = 'etc/gir.icns'
 }
