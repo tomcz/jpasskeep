@@ -8,3 +8,7 @@ build
 out
 .idea/
 gradle.properties
+.classpath
+.project
+.settings/
+bin/

@@ -31,7 +31,7 @@ import javax.swing.AbstractListModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainListModel extends AbstractListModel {
+public class MainListModel extends AbstractListModel<Object> {
 
     private List<Integer> filtered;
     private List<Entry> entries;

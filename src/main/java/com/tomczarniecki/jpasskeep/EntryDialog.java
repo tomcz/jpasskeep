@@ -50,7 +50,7 @@ public class EntryDialog extends JDialog implements EventListener<EntryDialog.Ev
 
     private final PasswordBuilderDialog dialog;
     private final JTextField description;
-    private final JComboBox category;
+    private final JComboBox<Category> category;
     private final JTextField username;
     private final JTextField password;
     private final JTextArea notes;
@@ -63,7 +63,7 @@ public class EntryDialog extends JDialog implements EventListener<EntryDialog.Ev
         dialog = new PasswordBuilderDialog(this);
 
         description = new JTextField();
-        category = new JComboBox(Category.values());
+        category = new JComboBox<>(Category.values());
         username = new JTextField();
         password = new JTextField();
         notes = new JTextArea();

@@ -1,7 +1,7 @@
 GIT_SHA ?= $(shell git rev-parse --short=7 HEAD)
 
-.PHONY: build-jar
-build-jar: clean
+.PHONY: build
+build: clean
 	./gradlew --console plain -Pversion=${GIT_SHA} test shadowJar
 
 .PHONY: clean

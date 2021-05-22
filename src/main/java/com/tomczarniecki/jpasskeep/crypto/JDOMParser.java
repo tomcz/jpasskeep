@@ -52,7 +52,6 @@ public class JDOMParser implements EntryParser {
     public static final String PASSWORD = "password";
     public static final String USERNAME = "username";
 
-    @SuppressWarnings("unchecked")
     public List<Entry> read(byte[] ba) throws ParserException {
         try {
             List<Entry> entries = new ArrayList<Entry>();

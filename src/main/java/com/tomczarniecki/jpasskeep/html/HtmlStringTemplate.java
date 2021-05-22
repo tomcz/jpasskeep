@@ -30,6 +30,7 @@ package com.tomczarniecki.jpasskeep.html;
 import org.antlr.stringtemplate.AttributeRenderer;
 import org.antlr.stringtemplate.StringTemplate;
 
+@SuppressWarnings({"rawtypes"})
 public class HtmlStringTemplate extends StringTemplate {
     @Override
     public AttributeRenderer getAttributeRenderer(Class aClass) {

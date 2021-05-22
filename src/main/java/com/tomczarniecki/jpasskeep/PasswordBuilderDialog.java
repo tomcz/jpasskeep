@@ -61,7 +61,7 @@ public class PasswordBuilderDialog extends JDialog implements EventListener<Pass
     private final PasswordBuilder builder = new PasswordBuilder();
     private final PasswordBuilderModel model = new PasswordBuilderModel(builder);
 
-    private final JList list = new JList(model);
+    private final JList<Object> list = new JList<>(model);
 
     public PasswordBuilderDialog(JFrame owner) {
         super(owner, "Password Generator", true);

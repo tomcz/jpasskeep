@@ -51,6 +51,7 @@ public class PreferenceSetter implements QuitHandler {
     private MainDetailsArea details;
     private MainListController controller;
 
+    @SuppressWarnings({"rawtypes"})
     public PreferenceSetter(Class clazz) {
         this.prefs = Preferences.userNodeForPackage(clazz);
     }

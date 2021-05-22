@@ -76,7 +76,6 @@ public class EntryCipher {
         writeTextToFile(file, header + CRLF + body);
     }
 
-    @SuppressWarnings({"unchecked"})
     private List<String> readlines(File file) throws ParserException {
         try {
             return FileUtils.readLines(file, CHARSET);

@@ -43,7 +43,7 @@ public class Printer implements Runnable, Printable {
     private final ErrorDisplay display;
     private final List<String> text;
 
-    private List pages;
+    private List<Object> pages;
     private Font font;
     private PageFormat pf;
 
@@ -51,7 +51,7 @@ public class Printer implements Runnable, Printable {
         this.display = display;
         this.text = text;
 
-        this.pages = new ArrayList();
+        this.pages = new ArrayList<>();
         this.font = new Font("Monospaced", Font.PLAIN, 8);
     }
 
@@ -74,17 +74,16 @@ public class Printer implements Runnable, Printable {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private void formatPages(PageFormat pf) {
         pages.clear();
         final int maxh = (int) pf.getImageableHeight();
         final int lineh = font.getSize();
         int pageh = 0;
-        List page = new ArrayList();
+        List<Object> page = new ArrayList<>();
         for (String item : text) {
             if (pageh + lineh > maxh) {
                 pages.add(page);
-                page = new ArrayList();
+                page = new ArrayList<>();
                 pageh = 0;
             }
             page.add(item);
@@ -107,6 +106,7 @@ public class Printer implements Runnable, Printable {
         return Printable.PAGE_EXISTS;
     }
 
+    @SuppressWarnings({"rawtypes"})
     private void renderPage(Graphics graphics, PageFormat pf, int pageIndex) {
         final int xo = (int) pf.getImageableX();
         final int yo = (int) pf.getImageableY();

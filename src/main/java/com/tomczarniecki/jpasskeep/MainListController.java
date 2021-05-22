@@ -38,13 +38,13 @@ import java.util.List;
 
 public class MainListController {
 
-    private JList display;
+    private JList<Object> display;
     private MainListModel model;
     private boolean dirty = false;
 
     public MainListController(List<Entry> entries) {
         model = new MainListModel(entries);
-        display = new JList(model);
+        display = new JList<>(model);
         display.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         display.setLayoutOrientation(JList.VERTICAL_WRAP);
         display.setVisibleRowCount(-1);
