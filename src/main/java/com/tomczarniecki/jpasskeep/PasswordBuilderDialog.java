@@ -56,7 +56,7 @@ public class PasswordBuilderDialog extends JDialog implements EventListener<Pass
     private final JCheckBox specialCharsField = new JCheckBox();
     private final JCheckBox nonConfusingField = new JCheckBox();
     private final JCheckBox allowRepeatsField = new JCheckBox();
-    private final JTextField lengthField = new JTextField("10");
+    private final JTextField lengthField = new JTextField("42");
 
     private final PasswordBuilder builder = new PasswordBuilder();
     private final PasswordBuilderModel model = new PasswordBuilderModel(builder);
