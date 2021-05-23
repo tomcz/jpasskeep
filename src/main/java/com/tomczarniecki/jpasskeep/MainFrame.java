@@ -55,7 +55,7 @@ public class MainFrame extends JFrame {
         prefs.setFilterPrefs(controller);
 
         JSplitPane display = createDisplay(controller, details);
-        setJMenuBar(createMenuBar(controller, details));
+        setJMenuBar(createMenuBar(controller, details, prefs));
         getContentPane().add(display);
 
         prefs.setFramePrefs(this);
@@ -75,10 +75,10 @@ public class MainFrame extends JFrame {
         return splitDisplay;
     }
 
-    private JMenuBar createMenuBar(MainListController controller, MainDetailsArea details) {
+    private JMenuBar createMenuBar(MainListController controller, MainDetailsArea details, PreferenceSetter prefs) {
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(createListMenu(controller));
-        menuBar.add(createViewMenu(controller, details));
+        menuBar.add(createViewMenu(controller, details, prefs));
         menuBar.add(createEntryMenu(controller));
         menuBar.add(createCopyMenu(controller));
         return menuBar;
@@ -110,7 +110,7 @@ public class MainFrame extends JFrame {
         return copyMenu;
     }
 
-    private JMenu createViewMenu(MainListController controller, MainDetailsArea details) {
+    private JMenu createViewMenu(MainListController controller, MainDetailsArea details, PreferenceSetter prefs) {
         JMenu viewMenu = new JMenu("View");
         viewMenu.add(createToggleItem("Show Home Entries", controller, "showHome", controller.isShowHome()));
         viewMenu.add(createToggleItem("Show Work Entries", controller, "showWork", controller.isShowWork()));
@@ -118,6 +118,8 @@ public class MainFrame extends JFrame {
         viewMenu.addSeparator();
         viewMenu.add(createToggleItem("Show Passwords", details, "showPasswd", details.isShowPasswd()));
         viewMenu.add(createToggleItem("Show Notes", details, "showNotes", details.isShowNotes()));
+        viewMenu.addSeparator();
+        viewMenu.add(createToggleItem("Dark Mode (on restart)", prefs, "darkMode", prefs.isDarkMode()));
         viewMenu.addSeparator();
         viewMenu.add(createInvokeItem("Password Generator", new PasswordBuilderDialog(this), "display"));
         return viewMenu;

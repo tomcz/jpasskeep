@@ -44,16 +44,27 @@ public class PreferenceSetter implements QuitHandler {
     static final String PREF_SHOW_HOME = "showHome";
     static final String PREF_SHOW_WORK = "showWork";
     static final String PREF_SHOW_OTHER = "showOther";
+    static final String PREF_DARK_MODE = "darkMode";
 
     private Preferences prefs;
     private JFrame frame;
     private JSplitPane display;
     private MainDetailsArea details;
     private MainListController controller;
+    private boolean darkMode;
 
-    @SuppressWarnings({"rawtypes"})
+    @SuppressWarnings({ "rawtypes" })
     public PreferenceSetter(Class clazz) {
-        this.prefs = Preferences.userNodeForPackage(clazz);
+        prefs = Preferences.userNodeForPackage(clazz);
+        darkMode = prefs.getBoolean(PREF_DARK_MODE, false);
+    }
+
+    public boolean isDarkMode() {
+        return darkMode;
+    }
+
+    public void setDarkMode(boolean darkMode) {
+        this.darkMode = darkMode;
     }
 
     public void setFramePrefs(JFrame frame) {
@@ -103,6 +114,7 @@ public class PreferenceSetter implements QuitHandler {
         prefs.putBoolean(PREF_SHOW_HOME, controller.isShowHome());
         prefs.putBoolean(PREF_SHOW_WORK, controller.isShowWork());
         prefs.putBoolean(PREF_SHOW_OTHER, controller.isShowOther());
+        prefs.putBoolean(PREF_DARK_MODE, darkMode);
         return true;
     }
 }

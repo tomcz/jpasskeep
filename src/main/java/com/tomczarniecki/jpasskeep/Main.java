@@ -28,6 +28,7 @@
 package com.tomczarniecki.jpasskeep;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import com.tomczarniecki.jpasskeep.crypto.CryptoException;
 import com.tomczarniecki.jpasskeep.crypto.EntryCipher;
 import org.apache.commons.lang.SystemUtils;
@@ -60,16 +61,21 @@ public class Main {
             System.setProperty("apple.laf.useScreenMenuBar", "false");
             System.setProperty("apple.eawt.quitStrategy", "CLOSE_ALL_WINDOWS");
         }
-        FlatDarkLaf.install();
+        PreferenceSetter prefs = new PreferenceSetter(MainFrame.class);
+        if (prefs.isDarkMode()) {
+            FlatDarkLaf.install();
+        } else {
+            FlatLightLaf.install();
+        }
         Main application = new Main();
-        application.start(args);
+        application.start(args, prefs);
     }
 
-    private void start(final String[] args) {
+    private void start(final String[] args, final PreferenceSetter prefs) {
         worker.runOnEventLoop(new Runnable() {
             public void run() {
                 initialise(args);
-                createAndShowGUI();
+                createAndShowGUI(prefs);
             }
         });
     }
@@ -90,9 +96,7 @@ public class Main {
         }
     }
 
-    private void createAndShowGUI() {
-        PreferenceSetter prefs = new PreferenceSetter(MainFrame.class);
-
+    private void createAndShowGUI(PreferenceSetter prefs) {
         frame = new MainFrame(controller, cipher, worker, prefs);
         Display display = frame.getDisplay();
 
