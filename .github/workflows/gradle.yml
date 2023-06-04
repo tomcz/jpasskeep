@@ -20,4 +20,4 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
       - name: Build with Gradle
-        run: ./gradlew clean test shadowJar
+        run: make all
