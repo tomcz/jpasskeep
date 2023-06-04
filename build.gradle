@@ -1,54 +1,25 @@
 plugins {
-  id 'com.github.johnrengelman.shadow' version '5.2.0'
-  id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 repositories {
-  mavenCentral()
-}
-
-configurations.all {
-  exclude(group: 'commons-logging')
-}
-
-configurations {
-  compress
+    mavenCentral()
 }
 
 dependencies {
+    implementation 'org.jdom:jdom:1.1.3'
+    implementation 'com.jgoodies:forms:1.2.1'
+    implementation 'com.formdev:flatlaf:1.1.1'
+    implementation 'commons-io:commons-io:2.4'
+    implementation 'commons-lang:commons-lang:2.6'
+    implementation 'org.antlr:stringtemplate:3.2.1'
+    implementation 'commons-codec:commons-codec:1.7'
+    implementation 'org.bouncycastle:bcprov-jdk16:1.46'
+    implementation 'net.sf.opencsv:opencsv:2.3'
 
-  compile 'org.jdom:jdom:1.1.3'
-  compile 'com.jgoodies:forms:1.2.1'
-  compile 'com.formdev:flatlaf:1.1.1'
-  compile 'commons-io:commons-io:2.4'
-  compile 'commons-lang:commons-lang:2.6'
-  compile 'org.antlr:stringtemplate:3.2.1'
-  compile 'commons-codec:commons-codec:1.7'
-  compile 'org.bouncycastle:bcprov-jdk16:1.46'
-  compile 'net.sf.opencsv:opencsv:2.3'
-
-  testCompile 'junit:junit:4.10'
-
-  compress 'com.yahoo.platform.yui:yuicompressor:2.4.7'
+    testImplementation 'junit:junit:4.10'
 }
 
-task(compressjs, type: JavaExec) {
-  classpath = configurations.compress
-  main = 'com.yahoo.platform.yui.compressor.Bootstrap'
-  args('-o src/main/resources/com/tomczarniecki/jpasskeep/resources/jpasskeep-min.js javascript/jpasskeep.js'.split(' '))
-}
+mainClassName = 'com.tomczarniecki.jpasskeep.Main'
 
-task(compresscss, type: JavaExec) {
-  classpath = configurations.compress
-  main = 'com.yahoo.platform.yui.compressor.Bootstrap'
-  args('-o src/main/resources/com/tomczarniecki/jpasskeep/resources/jpasskeep-min.css javascript/jpasskeep.css'.split(' '))
-}
-
-jar {
-  manifest {
-    attributes(
-      'Main-Class': 'com.tomczarniecki.jpasskeep.Main',
-      'Implementation-Version': version?: 'dev'
-    )
-  }
-}
