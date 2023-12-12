@@ -7,7 +7,6 @@ test.txt
 build
 out
 .idea/
-gradle.properties
 .classpath
 .project
 .settings/

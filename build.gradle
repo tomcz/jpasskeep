@@ -7,6 +7,10 @@ repositories {
     mavenCentral()
 }
 
+defaultTasks 'clean', 'test', 'build', 'shadowJar'
+
+mainClassName = 'com.tomczarniecki.jpasskeep.Main'
+
 dependencies {
     implementation 'org.jdom:jdom:1.1.3'
     implementation 'com.jgoodies:forms:1.2.1'
@@ -19,5 +23,3 @@ dependencies {
     implementation 'net.sf.opencsv:opencsv:2.3'
     testImplementation 'junit:junit:4.10'
 }
-
-mainClassName = 'com.tomczarniecki.jpasskeep.Main'
