@@ -90,8 +90,8 @@ public class MainFrame extends JFrame {
         listMenu.add(new JMenuItem(new ExportListAction(controller, display, cipher)));
         listMenu.add(new JMenuItem(new PrintListAction(controller, display)));
         listMenu.add(new JMenuItem(new HtmlExportAction(controller, display)));
-        listMenu.add(new JMenuItem(new CSVImportAction(controller, display)));
-        listMenu.add(new JMenuItem(new CSVExportAction(controller, display)));
+        listMenu.add(new JMenuItem(new XMLImportAction(controller, display)));
+        listMenu.add(new JMenuItem(new XMLExportAction(controller, display)));
         return listMenu;
     }
 

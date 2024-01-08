@@ -33,6 +33,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 import java.io.ByteArrayInputStream;
@@ -52,9 +53,19 @@ public class JDOMParser implements EntryParser {
     public static final String PASSWORD = "password";
     public static final String USERNAME = "username";
 
+    private final boolean prettyWrite;
+
+    public JDOMParser() {
+        this(false);
+    }
+
+    public JDOMParser(boolean prettyWrite) {
+        this.prettyWrite = prettyWrite;
+    }
+
     public List<Entry> read(byte[] ba) throws ParserException {
         try {
-            List<Entry> entries = new ArrayList<Entry>();
+            List<Entry> entries = new ArrayList<>();
             SAXBuilder builder = new SAXBuilder();
             Document doc = builder.build(new ByteArrayInputStream(ba));
             Element root = doc.getRootElement();
@@ -66,9 +77,7 @@ public class JDOMParser implements EntryParser {
             Collections.sort(entries);
             return entries;
 
-        } catch (JDOMException e) {
-            throw new ParserException(e);
-        } catch (IOException e) {
+        } catch (JDOMException | IOException e) {
             throw new ParserException(e);
         }
     }
@@ -81,6 +90,9 @@ public class JDOMParser implements EntryParser {
             }
             ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
             XMLOutputter writer = new XMLOutputter();
+            if (prettyWrite) {
+                writer.setFormat(Format.getPrettyFormat());
+            }
             writer.output(new Document(root), baos);
             return baos.toByteArray();
 

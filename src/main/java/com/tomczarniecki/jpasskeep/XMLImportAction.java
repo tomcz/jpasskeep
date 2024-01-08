@@ -1,35 +1,34 @@
 package com.tomczarniecki.jpasskeep;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.tomczarniecki.jpasskeep.crypto.EntryParser;
+import com.tomczarniecki.jpasskeep.crypto.JDOMParser;
+import org.apache.commons.io.FileUtils;
 
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
+public class XMLImportAction extends AbstractAction {
 
-public class CSVImportAction extends AbstractAction {
-
+    private final EntryParser parser = new JDOMParser();
     private final MainListController controller;
     private final Display display;
 
-    public CSVImportAction(MainListController controller, Display display) {
-        super("Import CSV");
+    public XMLImportAction(MainListController controller, Display display) {
+        super("Import XML");
         this.controller = controller;
         this.display = display;
     }
 
     @Override
     public void actionPerformed(ActionEvent evt) {
-        File file = display.showFileChooser("Import CSV");
+        File file = display.showFileChooser("Import XML");
         if (file != null) {
             try {
-                List<Entry> fileEntries = readEntries(file);
+                List<Entry> fileEntries = parser.read(FileUtils.readFileToByteArray(file));
                 List<Entry> selectedEntries = selectEntries(fileEntries);
                 appendEntries(selectedEntries);
 
@@ -40,29 +39,6 @@ public class CSVImportAction extends AbstractAction {
         }
     }
 
-    private List<Entry> readEntries(File file) throws Exception {
-        List<Entry> entries = new ArrayList<Entry>();
-        for (String[] line : readLines(file)) {
-            Entry entry = new Entry();
-            entry.setDescription(line[0]);
-            entry.setUsername(line[1]);
-            entry.setPassword(line[2]);
-            entry.setNotes(line[3]);
-            entries.add(entry);
-        }
-        return entries;
-    }
-
-    private List<String[]> readLines(File file) throws Exception {
-        CSVReader reader = null;
-        try {
-            reader = new CSVReader(new FileReader(file), ',');
-            return reader.readAll();
-        } finally {
-            closeQuietly(reader);
-        }
-    }
-
     private List<Entry> selectEntries(List<Entry> entries) {
         Map<String, ImportState> stateForEntries = findStateForEntries(entries);
         SelectDialog dialog = display.createSelectDialog("Select Entries to Import", entries, stateForEntries);
@@ -70,7 +46,7 @@ public class CSVImportAction extends AbstractAction {
     }
 
     private Map<String, ImportState> findStateForEntries(List<Entry> entries) {
-        Map<String, ImportState> stateForEntries = new HashMap<String, ImportState>();
+        Map<String, ImportState> stateForEntries = new HashMap<>();
         for (Entry entry : entries) {
             stateForEntries.put(entry.getDescription(), controller.stateForEntry(entry));
         }
