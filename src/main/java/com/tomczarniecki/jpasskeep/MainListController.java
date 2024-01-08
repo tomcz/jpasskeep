@@ -38,8 +38,8 @@ import java.util.List;
 
 public class MainListController {
 
-    private JList<Object> display;
-    private MainListModel model;
+    private final JList<Object> display;
+    private final MainListModel model;
     private boolean dirty = false;
 
     public MainListController(List<Entry> entries) {
@@ -80,6 +80,12 @@ public class MainListController {
         dirty = true;
         int index = getSelectedIndex();
         model.updateEntry(index, update);
+        refreshList(index);
+    }
+
+    public void updateEntryAt(int index, Entry entry) {
+        dirty = true;
+        model.updateEntry(index, entry);
         refreshList(index);
     }
 

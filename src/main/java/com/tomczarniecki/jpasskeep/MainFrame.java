@@ -116,6 +116,8 @@ public class MainFrame extends JFrame {
         viewMenu.add(createToggleItem("Show Work Entries", controller, "showWork", controller.isShowWork()));
         viewMenu.add(createToggleItem("Show Other Entries", controller, "showOther", controller.isShowOther()));
         viewMenu.addSeparator();
+        viewMenu.add(createInvokeItem("Assign Categories", new AssignCategoriesDialog(this, controller), "assign"));
+        viewMenu.addSeparator();
         viewMenu.add(createToggleItem("Show Passwords", details, "showPasswd", details.isShowPasswd()));
         viewMenu.add(createToggleItem("Show Notes", details, "showNotes", details.isShowNotes()));
         viewMenu.addSeparator();
