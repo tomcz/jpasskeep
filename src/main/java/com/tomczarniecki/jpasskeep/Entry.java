@@ -27,11 +27,7 @@
  */
 package com.tomczarniecki.jpasskeep;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class Entry implements Comparable<Entry> {
 
@@ -89,10 +85,6 @@ public class Entry implements Comparable<Entry> {
         this.notes = notes;
     }
 
-    public List<String> getNotesAsLines() {
-        return Arrays.asList(StringUtils.split(notes, "\n\r\f"));
-    }
-
     public int compareTo(Entry other) {
         return this.getDescription().compareToIgnoreCase(other.getDescription());
     }
@@ -101,8 +93,7 @@ public class Entry implements Comparable<Entry> {
         if (obj == this) {
             return true;
         }
-        if (obj instanceof Entry) {
-            Entry other = (Entry) obj;
+        if (obj instanceof Entry other) {
             return new EqualsBuilder()
                     .append(this.getDescription(), other.getDescription())
                     .append(this.getCategory(), other.getCategory())

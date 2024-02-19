@@ -30,19 +30,33 @@ package com.tomczarniecki.jpasskeep;
 import javax.swing.AbstractListModel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class MainListModel extends AbstractListModel<Object> {
 
-    private List<Integer> filtered;
-    private List<Entry> entries;
+    private final List<Entry> filtered;
+    private final SortedMap<String, Entry> entries;
 
     private boolean showHome = true;
     private boolean showWork = true;
     private boolean showOther = true;
 
     public MainListModel(List<Entry> entries) {
-        this.filtered = new ArrayList<Integer>();
-        this.entries = new ArrayList<Entry>(entries);
+        this.filtered = new ArrayList<>();
+        this.entries = new TreeMap<>();
+        for (Entry entry : entries) {
+            if (this.entries.containsKey(entry.getDescription())) {
+                Entry current = this.entries.get(entry.getDescription());
+                String notes = current.getNotes();
+                notes += "\n--Merged--\n" + entry.getUsername();
+                notes += "\n" + entry.getPassword();
+                notes += "\n" + entry.getNotes();
+                current.setNotes(notes);
+            } else {
+                this.entries.put(entry.getDescription(), entry);
+            }
+        }
         filter();
     }
 
@@ -51,30 +65,26 @@ public class MainListModel extends AbstractListModel<Object> {
     }
 
     public Object getElementAt(int index) {
-        return getEntry(index).getDescription();
+        return filtered.get(index).getDescription();
     }
 
     public Entry getEntry(int index) {
-        return entries.get(getActualIndex(index));
+        return filtered.get(index);
     }
 
-    public void updateEntry(int index, Entry entry) {
-        entries.set(getActualIndex(index), entry);
-        filter();
-    }
-
-    public void appendEntry(Entry entry) {
-        entries.add(entry);
+    public void setEntry(Entry entry) {
+        entries.put(entry.getDescription(), entry);
         filter();
     }
 
     public void removeEntry(int index) {
-        entries.remove(getActualIndex(index));
+        Entry entry = filtered.get(index);
+        entries.remove(entry.getDescription());
         filter();
     }
 
     public List<Entry> getEntries() {
-        return entries;
+        return List.copyOf(entries.values());
     }
 
     public void setShowHome(boolean showHome) {
@@ -104,42 +114,32 @@ public class MainListModel extends AbstractListModel<Object> {
         return showOther;
     }
 
-    private int getActualIndex(int index) {
-        return filtered.get(index);
-    }
-
     private void filter() {
         filtered.clear();
-        for (int i = 0; i < entries.size(); i++) {
-            if (show(entries.get(i))) {
-                filtered.add(i);
+        for (Entry entry : entries.values()) {
+            if (show(entry)) {
+                filtered.add(entry);
             }
         }
         fireContentsChanged(this, 0, filtered.size());
     }
 
     private boolean show(Entry entry) {
-        switch (entry.getCategory()) {
-            case Home:
-                return showHome;
-            case Work:
-                return showWork;
-            case Other:
-                return showOther;
-            default:
-                return true;
-        }
+        return switch (entry.getCategory()) {
+            case Home -> showHome;
+            case Work -> showWork;
+            case Other -> showOther;
+        };
     }
 
-    public ImportState stateForEntry(Entry entry) {
-        for (Entry modelEntry : entries) {
-            if (modelEntry.equals(entry)) {
-                return ImportState.Equal;
-            }
-            if (modelEntry.getDescription().equals(entry.getDescription())) {
-                return ImportState.Changed;
-            }
+    public ImportState stateForEntry(Entry otherEntry) {
+        Entry currentEntry = entries.get(otherEntry.getDescription());
+        if (currentEntry == null) {
+            return ImportState.New;
         }
-        return ImportState.New;
+        if (currentEntry.equals(otherEntry)) {
+            return ImportState.Equal;
+        }
+        return ImportState.Changed;
     }
 }

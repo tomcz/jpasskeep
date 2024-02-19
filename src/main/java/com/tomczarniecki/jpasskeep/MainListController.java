@@ -72,20 +72,20 @@ public class MainListController {
 
     public void appendEntry(Entry entry) {
         dirty = true;
-        model.appendEntry(entry);
+        model.setEntry(entry);
         refreshList(model.getSize() - 1);
     }
 
     public void updateSelectedEntry(Entry update) {
         dirty = true;
         int index = getSelectedIndex();
-        model.updateEntry(index, update);
+        model.setEntry(update);
         refreshList(index);
     }
 
     public void updateEntryAt(int index, Entry entry) {
         dirty = true;
-        model.updateEntry(index, entry);
+        model.setEntry(entry);
         refreshList(index);
     }
 
