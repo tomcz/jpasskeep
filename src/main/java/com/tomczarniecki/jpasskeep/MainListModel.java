@@ -46,15 +46,16 @@ public class MainListModel extends AbstractListModel<Object> {
         this.filtered = new ArrayList<>();
         this.entries = new TreeMap<>();
         for (Entry entry : entries) {
-            if (this.entries.containsKey(entry.getDescription())) {
-                Entry current = this.entries.get(entry.getDescription());
+            String key = entry.getDescription();
+            if (this.entries.containsKey(key)) {
+                Entry current = this.entries.get(key);
                 String notes = current.getNotes();
                 notes += "\n--Merged--\n" + entry.getUsername();
                 notes += "\n" + entry.getPassword();
                 notes += "\n" + entry.getNotes();
                 current.setNotes(notes);
             } else {
-                this.entries.put(entry.getDescription(), entry);
+                this.entries.put(key, entry);
             }
         }
         filter();
