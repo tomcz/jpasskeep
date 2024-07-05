@@ -65,7 +65,23 @@ public class MainListModel extends AbstractListModel<Object> {
     }
 
     public void setEntry(Entry entry) {
-        entries.put(entry.getKey(), entry);
+        if (entries.containsKey(entry.getKey())) {
+            entries.put(entry.getKey(), entry);
+        } else {
+            ImportState state = stateForEntry(entry);
+            if (state.equals(ImportState.New)) {
+                entries.put(entry.getKey(), entry);
+            } else if (state.equals(ImportState.Changed)) {
+                for (Entry current : entries.values()) {
+                    if (current.getDescription().equals(entry.getDescription())) {
+                        current.setCategory(entry.getCategory());
+                        current.setUsername(entry.getUsername());
+                        current.setPassword(entry.getPassword());
+                        current.setNotes(entry.getNotes());
+                    }
+                }
+            }
+        }
         filter();
     }
 
