@@ -29,14 +29,15 @@ package com.tomczarniecki.jpasskeep;
 
 import javax.swing.AbstractListModel;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.Map;
 
 public class MainListModel extends AbstractListModel<Object> {
 
     private final List<Entry> filtered;
-    private final SortedMap<String, Entry> entries;
+    private final Map<String, Entry> entries;
 
     private boolean showHome = true;
     private boolean showWork = true;
@@ -44,19 +45,9 @@ public class MainListModel extends AbstractListModel<Object> {
 
     public MainListModel(List<Entry> entries) {
         this.filtered = new ArrayList<>();
-        this.entries = new TreeMap<>();
+        this.entries = new HashMap<>();
         for (Entry entry : entries) {
-            String key = entry.getDescription();
-            if (this.entries.containsKey(key)) {
-                Entry current = this.entries.get(key);
-                String notes = current.getNotes();
-                notes += "\n--Merged--\n" + entry.getUsername();
-                notes += "\n" + entry.getPassword();
-                notes += "\n" + entry.getNotes();
-                current.setNotes(notes);
-            } else {
-                this.entries.put(key, entry);
-            }
+            this.entries.put(entry.getKey(), entry);
         }
         filter();
     }
@@ -74,18 +65,20 @@ public class MainListModel extends AbstractListModel<Object> {
     }
 
     public void setEntry(Entry entry) {
-        entries.put(entry.getDescription(), entry);
+        entries.put(entry.getKey(), entry);
         filter();
     }
 
     public void removeEntry(int index) {
         Entry entry = filtered.get(index);
-        entries.remove(entry.getDescription());
+        entries.remove(entry.getKey());
         filter();
     }
 
     public List<Entry> getEntries() {
-        return List.copyOf(entries.values());
+        List<Entry> values = new ArrayList<>(entries.values());
+        Collections.sort(values);
+        return values;
     }
 
     public void setShowHome(boolean showHome) {
@@ -122,6 +115,7 @@ public class MainListModel extends AbstractListModel<Object> {
                 filtered.add(entry);
             }
         }
+        Collections.sort(filtered);
         fireContentsChanged(this, 0, filtered.size());
     }
 
@@ -134,13 +128,14 @@ public class MainListModel extends AbstractListModel<Object> {
     }
 
     public ImportState stateForEntry(Entry otherEntry) {
-        Entry currentEntry = entries.get(otherEntry.getDescription());
-        if (currentEntry == null) {
-            return ImportState.New;
+        for (Entry entry : entries.values()) {
+            if (entry.getDescription().equals(otherEntry.getDescription())) {
+                if (entry.equals(otherEntry)) {
+                    return ImportState.Equal;
+                }
+                return ImportState.Changed;
+            }
         }
-        if (currentEntry.equals(otherEntry)) {
-            return ImportState.Equal;
-        }
-        return ImportState.Changed;
+        return ImportState.New;
     }
 }

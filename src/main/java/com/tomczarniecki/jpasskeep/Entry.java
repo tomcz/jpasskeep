@@ -27,15 +27,23 @@
  */
 package com.tomczarniecki.jpasskeep;
 
+import java.util.List;
+import java.util.UUID;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 
 public class Entry implements Comparable<Entry> {
 
+    private final String key = UUID.randomUUID().toString();
     private String description = "";
     private Category category = Category.Home;
     private String username = "";
     private String password = "";
     private String notes = "";
+
+    public String getKey() {
+        return key;
+    }
 
     public String getDescription() {
         return description;
@@ -75,6 +83,11 @@ public class Entry implements Comparable<Entry> {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<String> getNotesAsLines() {
+        String[] lines = notes.split("\\r?\\n");
+        return List.of(lines);
     }
 
     public String getNotes() {
