@@ -85,6 +85,7 @@ public class Entry implements Comparable<Entry> {
         this.password = password;
     }
 
+    @SuppressWarnings("unused")
     public List<String> getNotesAsLines() {
         String[] lines = notes.split("\\r?\\n");
         return List.of(lines);
