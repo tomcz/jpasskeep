@@ -99,6 +99,14 @@ public class Entry implements Comparable<Entry> {
         this.notes = notes;
     }
 
+    public void updateFrom(Entry other) {
+        this.setDescription(other.getDescription());
+        this.setCategory(other.getCategory());
+        this.setUsername(other.getUsername());
+        this.setPassword(other.getPassword());
+        this.setNotes(other.getNotes());
+    }
+
     public int compareTo(Entry other) {
         return this.getDescription().compareToIgnoreCase(other.getDescription());
     }

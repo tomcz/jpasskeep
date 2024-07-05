@@ -73,11 +73,8 @@ public class MainListModel extends AbstractListModel<Object> {
                 entries.put(entry.getKey(), entry);
             } else if (state.equals(ImportState.Changed)) {
                 for (Entry current : entries.values()) {
-                    if (current.getDescription().equals(entry.getDescription())) {
-                        current.setCategory(entry.getCategory());
-                        current.setUsername(entry.getUsername());
-                        current.setPassword(entry.getPassword());
-                        current.setNotes(entry.getNotes());
+                    if (current.compareTo(entry) == 0) {
+                        current.updateFrom(entry);
                     }
                 }
             }
@@ -143,10 +140,10 @@ public class MainListModel extends AbstractListModel<Object> {
         };
     }
 
-    public ImportState stateForEntry(Entry otherEntry) {
-        for (Entry entry : entries.values()) {
-            if (entry.getDescription().equals(otherEntry.getDescription())) {
-                if (entry.equals(otherEntry)) {
+    public ImportState stateForEntry(Entry entry) {
+        for (Entry current : entries.values()) {
+            if (current.compareTo(entry) == 0) {
+                if (current.equals(entry)) {
                     return ImportState.Equal;
                 }
                 return ImportState.Changed;
