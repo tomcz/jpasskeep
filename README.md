@@ -1,3 +1,7 @@
+This project has been archived in favour of https://codeberg.org/tomcz/secrets as I have no desire to manage more than one cross-platform password manager project.
+
+You can safely export JPasskeep passwords in XML format and import them into the Secrets password manager, and even share them across devices if you self-host the password manager backend.
+
 JPasskeep
 =========
 
